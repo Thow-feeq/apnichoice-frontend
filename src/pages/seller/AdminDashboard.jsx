@@ -55,7 +55,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const userRes = await axios.get("/api/users/count");
+        const userRes = await axios.get("/api/user/count");
         if (userRes.data.success) setUserCount(userRes.data.count);
 
         const orderRes = await axios.get("/api/order/count");
