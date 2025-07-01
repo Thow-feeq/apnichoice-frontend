@@ -65,18 +65,15 @@ const Navbar = () => {
                   {getCartCount()}
                 </span>
               </div>
+
               <div className="text-center">
-                {user ? (
-                  <>
-                    <img src={assets.user_icon} alt="User" className="w-6 mx-auto" />
-                    <span className="text-xs text-gray-600">{user.name}</span>
-                  </>
-                ) : (
-                  <button onClick={() => setOpen(!open)}>
-                    <img src={assets.menu_icon} alt="Menu" className="w-6" />
-                  </button>
-                )}
+                <img src={assets.user_icon} alt="User" className="w-6 mx-auto" />
+                <span className="text-xs text-gray-600">{user ? user.name : 'Login'}</span>
               </div>
+
+              <button onClick={() => setOpen(!open)}>
+                <img src={assets.menu_icon} alt="Menu" className="w-6" />
+              </button>
             </div>
           </div>
 
