@@ -30,7 +30,7 @@ const Categories = () => {
     };
 
     fetchCategories();
-  }, [axios]);
+  }, []);
 
   const handleNavigate = useCallback(
     (path) => {
