@@ -16,6 +16,7 @@ const Categories = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+
         if (data.success) {
           setCategories(data.categories);
         } else {
@@ -50,27 +51,25 @@ const Categories = () => {
     }
   };
 
-  if (loading) return <p>Loading categories...</p>;
+  if (loading) return <p className="text-center py-10">Loading categories...</p>;
 
   return (
     <section className="w-full px-4 sm:px-6 lg:px-8 mt-16">
-      <h2 className="text-3xl font-semibold mb-8 text-black">Shop by Category</h2>
+      <h2 className="text-3xl font-semibold mb-8 text-black text-center">Shop by Category</h2>
 
       <div className="relative">
         {/* Left Arrow */}
         <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 
-                     bg-black text-white hover:bg-gray-800 
-                     w-10 h-10 flex items-center justify-center 
-                     rounded-full shadow transition duration-300"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
           onClick={() => scroll('left')}
+          aria-label="Scroll Left"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
-        {/* Scrollable Category Cards */}
+        {/* Categories Scrollable */}
         <div
           ref={scrollContainerRef}
           className="flex overflow-x-auto gap-4 pb-4 scroll-smooth no-scrollbar"
@@ -103,11 +102,9 @@ const Categories = () => {
 
         {/* Right Arrow */}
         <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 
-                     bg-black text-white hover:bg-gray-800 
-                     w-10 h-10 flex items-center justify-center 
-                     rounded-full shadow transition duration-300"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
           onClick={() => scroll('right')}
+          aria-label="Scroll Right"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
