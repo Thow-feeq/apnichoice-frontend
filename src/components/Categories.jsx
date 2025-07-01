@@ -98,7 +98,7 @@ const Categories = () => {
 
               {image ? (
                 <img
-                  src={`http://localhost:4000${image}`}
+                  src={`https://apnichoice-backend.onrender.com${image}`}
                   alt={text}
                   className="relative z-10 w-20 h-20 object-contain mb-2 transition-transform duration-300 group-hover:scale-110"
                   loading="lazy"
