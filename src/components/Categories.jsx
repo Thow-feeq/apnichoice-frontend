@@ -7,7 +7,13 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const scrollContainerRef = useRef(null);
 
-  const BACKEND_URL = 'https://apnichoice-backend.onrender.com'; // ✅ your backend URL
+  const importImage = (name) => {
+    try {
+      return require(`../assets/${name}`);
+    } catch (err) {
+      return require(`../assets/fallback.jpg`); // fallback image
+    }
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -61,12 +67,8 @@ const Categories = () => {
       <div className="relative">
         {/* Left Scroll Button */}
         <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 
-                     bg-black text-white hover:bg-gray-800 
-                     w-10 h-10 flex items-center justify-center 
-                     rounded-full shadow transition duration-300"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
           onClick={() => scroll('left')}
-          aria-label="Scroll Left"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -82,33 +84,19 @@ const Categories = () => {
           {categories.map(({ _id, text, image, bgColor, path }, index) => (
             <button
               key={_id || index}
-              type="button"
               onClick={() => handleNavigate(path)}
               className="group relative flex-shrink-0 w-[150px] sm:w-[180px] flex flex-col items-center rounded-lg p-4 overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-xl"
               style={{ backgroundColor: bgColor || '#f9f9f9' }}
             >
-              {/* Hover Overlay */}
               <div className="absolute inset-0 z-0 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-500 transition-opacity duration-500 opacity-0 group-hover:opacity-20 rounded-lg" />
 
-              {/* Category Image */}
-              {image ? (
-                <img
-                  src={`${BACKEND_URL}${image}`}
-                  alt={text}
-                  className="relative z-10 w-20 h-20 object-contain mb-2 transition-transform duration-300 group-hover:scale-110"
-                  draggable={false}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = '/fallback.jpg'; // Optional fallback image
-                  }}
-                />
-              ) : (
-                <div className="relative z-10 w-20 h-20 bg-gray-200 flex items-center justify-center rounded mb-2">
-                  No Image
-                </div>
-              )}
+              <img
+                src={importImage(image)}
+                alt={text}
+                className="relative z-10 w-20 h-20 object-contain mb-2 transition-transform duration-300 group-hover:scale-110"
+                draggable={false}
+              />
 
-              {/* Category Name */}
               <span className="relative z-10 text-sm font-medium text-gray-900 text-center">{text}</span>
             </button>
           ))}
@@ -116,12 +104,8 @@ const Categories = () => {
 
         {/* Right Scroll Button */}
         <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 
-                     bg-black text-white hover:bg-gray-800 
-                     w-10 h-10 flex items-center justify-center 
-                     rounded-full shadow transition duration-300"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
           onClick={() => scroll('right')}
-          aria-label="Scroll Right"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
