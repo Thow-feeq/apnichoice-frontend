@@ -7,14 +7,6 @@ const Categories = () => {
   const [loading, setLoading] = useState(true);
   const scrollContainerRef = useRef(null);
 
-  const importImage = (name) => {
-    try {
-      return require(`../assets/${name}`);
-    } catch (err) {
-      return require(`../assets/fallback.jpg`); // fallback image
-    }
-  };
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -65,9 +57,12 @@ const Categories = () => {
       <h2 className="text-3xl font-semibold mb-8 text-black">Shop by Category</h2>
 
       <div className="relative">
-        {/* Left Scroll Button */}
+        {/* Left Arrow */}
         <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 
+                     bg-black text-white hover:bg-gray-800 
+                     w-10 h-10 flex items-center justify-center 
+                     rounded-full shadow transition duration-300"
           onClick={() => scroll('left')}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -91,10 +86,14 @@ const Categories = () => {
               <div className="absolute inset-0 z-0 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-500 transition-opacity duration-500 opacity-0 group-hover:opacity-20 rounded-lg" />
 
               <img
-                src={importImage(image)}
+                src={`/category/${image || 'fallback.jpg'}`}
                 alt={text}
                 className="relative z-10 w-20 h-20 object-contain mb-2 transition-transform duration-300 group-hover:scale-110"
                 draggable={false}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = '/category/fallback.jpg';
+                }}
               />
 
               <span className="relative z-10 text-sm font-medium text-gray-900 text-center">{text}</span>
@@ -102,9 +101,12 @@ const Categories = () => {
           ))}
         </div>
 
-        {/* Right Scroll Button */}
+        {/* Right Arrow */}
         <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 
+                     bg-black text-white hover:bg-gray-800 
+                     w-10 h-10 flex items-center justify-center 
+                     rounded-full shadow transition duration-300"
           onClick={() => scroll('right')}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
