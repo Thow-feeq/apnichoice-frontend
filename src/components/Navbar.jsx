@@ -58,15 +58,25 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center space-x-3">
-              <div onClick={() => navigate('/cart')} className="relative cursor-pointer">
-                <img src={assets.nav_cart_icon} alt="Cart" className="w-6" />
+              <div onClick={() => navigate('/cart')} className="relative cursor-pointer text-center">
+                <img src={assets.nav_cart_icon} alt="Cart" className="w-6 mx-auto" />
+                <span className="text-xs text-gray-600">Cart</span>
                 <span className="absolute -top-2 -right-2 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                   {getCartCount()}
                 </span>
               </div>
-              <button onClick={() => setOpen(!open)}>
-                <img src={assets.menu_icon} alt="Menu" className="w-6" />
-              </button>
+              <div className="text-center">
+                {user ? (
+                  <>
+                    <img src={assets.user_icon} alt="User" className="w-6 mx-auto" />
+                    <span className="text-xs text-gray-600">{user.name}</span>
+                  </>
+                ) : (
+                  <button onClick={() => setOpen(!open)}>
+                    <img src={assets.menu_icon} alt="Menu" className="w-6" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -99,21 +109,23 @@ const Navbar = () => {
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               </div>
 
-              <div onClick={() => navigate('/cart')} className="relative cursor-pointer">
-                <img src={assets.nav_cart_icon} alt="Cart" className="w-6" />
+              <div onClick={() => navigate('/cart')} className="relative cursor-pointer text-center">
+                <img src={assets.nav_cart_icon} alt="Cart" className="w-6 mx-auto" />
+                <span className="text-xs text-gray-600">Cart</span>
                 <span className="absolute -top-2 -right-2 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                   {getCartCount()}
                 </span>
               </div>
 
               {!user ? (
-                <div onClick={() => setShowUserLogin(true)} className="cursor-pointer">
-                  <img src={assets.user_icon} alt="User" className="w-8" />
+                <div onClick={() => setShowUserLogin(true)} className="cursor-pointer text-center">
+                  <img src={assets.user_icon} alt="User" className="w-8 mx-auto" />
+                  <span className="text-xs text-gray-600">Login</span>
                 </div>
               ) : (
-                <div className="relative group cursor-pointer flex items-center gap-2">
-                  <img src={assets.user_icon} className="w-8" alt="User" />
-                  <span className="text-sm text-gray-700">{user.name}</span>
+                <div className="relative group cursor-pointer flex flex-col items-center text-center">
+                  <img src={assets.user_icon} className="w-8 mx-auto" alt="User" />
+                  <span className="text-xs text-gray-600">{user.name}</span>
                   <ul className="hidden group-hover:block absolute top-10 right-0 bg-white shadow border rounded-md text-sm z-50">
                     <li onClick={() => navigate("my-orders")} className="px-4 py-2 hover:bg-primary/10">My Orders</li>
                     <li onClick={logout} className="px-4 py-2 hover:bg-primary/10">Logout</li>
@@ -157,56 +169,6 @@ const Navbar = () => {
           )}
         </div>
       </nav>
-
-      {/* ✅ Location Modal */}
-      {showLocationPrompt && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
-          <div className="bg-white p-6 rounded-lg shadow-md w-80 space-y-4">
-            <h2 className="text-lg font-semibold text-gray-800">Choose Delivery Location</h2>
-            <p className="text-sm text-gray-600">To deliver as quickly as possible, we would like your current location.</p>
-
-            <button
-              onClick={() => {
-                if (navigator.geolocation) {
-                  navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                      const { latitude, longitude } = position.coords;
-                      setLocation(`Lat: ${latitude.toFixed(2)}, Lon: ${longitude.toFixed(2)}`);
-                      setShowLocationPrompt(false);
-                    },
-                    () => toast.error("Failed to get location.")
-                  );
-                } else {
-                  toast.error("Geolocation not supported.");
-                }
-              }}
-              className="w-full bg-primary hover:bg-primary-dull text-white py-2 rounded"
-            >
-              Use Current Location
-            </button>
-
-            <button
-              onClick={() => {
-                const manual = prompt("Enter your delivery location:");
-                if (manual) {
-                  setLocation(manual);
-                  setShowLocationPrompt(false);
-                }
-              }}
-              className="w-full border border-primary text-primary hover:bg-primary/10 py-2 rounded"
-            >
-              Type Manually
-            </button>
-
-            <button
-              onClick={() => setShowLocationPrompt(false)}
-              className="w-full text-sm text-gray-500 underline mt-1"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 };
