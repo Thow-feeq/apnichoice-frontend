@@ -6,12 +6,12 @@ import {
   FaShoppingCart,
   FaTicketAlt,
   FaBoxOpen,
-  FaTags,        // icon for categories
+  FaTags,
+  FaEnvelope,
   FaArrowUp,
   FaArrowDown,
 } from "react-icons/fa";
 
-// Chart.js setup
 import { Pie, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -44,13 +44,14 @@ const AdminDashboard = () => {
   const [couponCount, setCouponCount] = useState(0);
   const [productCount, setProductCount] = useState(0);
   const [categoryCount, setCategoryCount] = useState(0);
+  const [subscriberCount, setSubscriberCount] = useState(0);
 
-  // Example trends, replace with real data if available
   const userTrend = 5;
   const orderTrend = -2;
   const couponTrend = 0;
   const productTrend = 10;
   const categoryTrend = 8;
+  const subscriberTrend = 12;
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -69,6 +70,9 @@ const AdminDashboard = () => {
 
         const categoryRes = await axios.get("/api/category/count");
         if (categoryRes.data.success) setCategoryCount(categoryRes.data.count);
+
+        const subscriberRes = await axios.get("/api/newsletter/count");
+        if (subscriberRes.data.success) setSubscriberCount(subscriberRes.data.count);
       } catch (error) {
         toast.error("Failed to fetch dashboard data");
       }
@@ -77,19 +81,19 @@ const AdminDashboard = () => {
     fetchCounts();
   }, [axios]);
 
-  // Pie Chart Data with category count added
   const pieData = {
-    labels: ["Users", "Orders", "Coupons", "Products", "Categories"],
+    labels: ["Users", "Orders", "Coupons", "Products", "Categories", "Subscribers"],
     datasets: [
       {
         label: "Dashboard Distribution",
-        data: [userCount, orderCount, couponCount, productCount, categoryCount],
+        data: [userCount, orderCount, couponCount, productCount, categoryCount, subscriberCount],
         backgroundColor: [
-          "rgba(59, 130, 246, 0.7)",  // blue - users
-          "rgba(34, 197, 94, 0.7)",   // green - orders
-          "rgba(234, 179, 8, 0.7)",   // yellow - coupons
-          "rgba(168, 85, 247, 0.7)",  // purple - products
-          "rgba(220, 38, 38, 0.7)",   // red - categories
+          "rgba(59, 130, 246, 0.7)",
+          "rgba(34, 197, 94, 0.7)",
+          "rgba(234, 179, 8, 0.7)",
+          "rgba(168, 85, 247, 0.7)",
+          "rgba(220, 38, 38, 0.7)",
+          "rgba(20, 184, 166, 0.7)"
         ],
         borderColor: [
           "rgba(59, 130, 246, 1)",
@@ -97,6 +101,7 @@ const AdminDashboard = () => {
           "rgba(234, 179, 8, 1)",
           "rgba(168, 85, 247, 1)",
           "rgba(220, 38, 38, 1)",
+          "rgba(20, 184, 166, 1)"
         ],
         borderWidth: 1,
       },
@@ -112,7 +117,6 @@ const AdminDashboard = () => {
     },
   };
 
-  // Analytics data remains unchanged but you can add category trends if desired
   const analyticsData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     datasets: [
@@ -146,12 +150,18 @@ const AdminDashboard = () => {
       },
       {
         label: "Categories",
-        data: [5, 7, 6, 8, 10, 12],  // ← replace with your real monthly category data
+        data: [5, 7, 6, 8, 10, 12],
         borderColor: "rgba(220, 38, 38, 1)",
         backgroundColor: "rgba(220, 38, 38, 0.2)",
         fill: true,
       },
-      // Optional: add categories analytics dataset here if you have monthly data
+      {
+        label: "Subscribers",
+        data: [10, 12, 18, 22, 27, 30],
+        borderColor: "rgba(20, 184, 166, 1)",
+        backgroundColor: "rgba(20, 184, 166, 0.2)",
+        fill: true,
+      },
     ],
   };
 
@@ -168,14 +178,6 @@ const AdminDashboard = () => {
     },
   };
 
-  const colorClassMap = {
-    blue: "text-blue-600",
-    green: "text-green-600",
-    yellow: "text-yellow-600",
-    purple: "text-purple-600",
-    red: "text-red-600",
-  };
-
   const renderTrendIcon = (trend) => {
     if (trend > 0) return <FaArrowUp className="inline text-green-500 ml-1" aria-label="up" />;
     if (trend < 0) return <FaArrowDown className="inline text-red-500 ml-1" aria-label="down" />;
@@ -186,9 +188,7 @@ const AdminDashboard = () => {
     <div className="p-6 max-w-7xl mx-auto">
       <h2 className="text-3xl font-bold mb-8">Admin Dashboard</h2>
 
-      {/* Pie + Line chart side by side */}
       <div className="mt-10 flex flex-col md:flex-row gap-6">
-        {/* Pie Chart */}
         <div className="bg-white shadow-md rounded-lg p-6 w-full md:w-1/3 flex flex-col items-center">
           <h3 className="text-xl font-semibold mb-4">Overview Pie Chart</h3>
           <div className="w-48 h-48">
@@ -196,26 +196,24 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Analytics Graph */}
         <div className="bg-white shadow-md rounded-lg p-6 w-full md:w-2/3">
           <h3 className="text-xl font-semibold mb-4">Analytics Graph</h3>
           <Line data={analyticsData} options={analyticsOptions} />
         </div>
       </div>
 
-      {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6 mt-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-6 mt-8">
         <MetricCard title="Total Users" icon={<FaUsers />} count={userCount} trend={userTrend} color="blue" />
         <MetricCard title="Total Orders" icon={<FaShoppingCart />} count={orderCount} trend={orderTrend} color="green" />
         <MetricCard title="Total Coupons" icon={<FaTicketAlt />} count={couponCount} trend={couponTrend} color="yellow" />
         <MetricCard title="Total Products" icon={<FaBoxOpen />} count={productCount} trend={productTrend} color="purple" />
         <MetricCard title="Total Categories" icon={<FaTags />} count={categoryCount} trend={categoryTrend} color="red" />
+        <MetricCard title="Subscribers" icon={<FaEnvelope />} count={subscriberCount} trend={subscriberTrend} color="teal" />
       </div>
     </div>
   );
 };
 
-// Reusable Metric Card
 const MetricCard = ({ title, icon, count, trend, color }) => {
   const trendColor =
     trend > 0 ? "text-green-600" : trend < 0 ? "text-red-600" : "text-gray-500";
@@ -226,6 +224,7 @@ const MetricCard = ({ title, icon, count, trend, color }) => {
     yellow: "text-yellow-600",
     purple: "text-purple-600",
     red: "text-red-600",
+    teal: "text-teal-600",
   };
 
   const colorClass = colorClassMap[color] || "text-gray-600";

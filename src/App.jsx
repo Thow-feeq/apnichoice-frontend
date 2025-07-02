@@ -31,6 +31,8 @@ import AdminDashboard from './pages/seller/AdminDashboard'
 import CouponList from './pages/seller/CouponList'
 import AddCategory from './pages/seller/AddCategory'
 import CategoryList from './pages/seller/CategoryList'
+import SubscriberList from './pages/seller/SubscriberList';
+
 
 const App = () => {
   const location = useLocation();
@@ -68,6 +70,7 @@ const App = () => {
             <Route path='create-coupon' element={<SellerCreateCoupon />} />
             <Route path='edit-product/:id' element={<EditProduct />} />
             <Route path='userList' element={<UserList />} />
+            <Route path='subscriberList' element={<SubscriberList />} />
             <Route path='coupons' element={<CouponList />} />
             <Route path='login' element={<SellerLogin />} />
             <Route path='dashboard' element={<AdminDashboard />} />

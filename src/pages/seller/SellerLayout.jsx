@@ -19,6 +19,7 @@ const SellerLayout = () => {
     { name: "Create Coupon", path: "/seller/create-coupon", icon: assets.create_coupon },
     { name: "User Lists", path: "/seller/UserList", icon: assets.user_list },
     { name: "Coupon List", path: "/seller/coupons", icon: assets.coupon_list },
+    { name: "Subscriber List", path: "/seller/subscriberList", icon: assets.subscriber_list }
   ];
 
   const logout = async () => {
@@ -43,8 +44,12 @@ const SellerLayout = () => {
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="md:hidden text-2xl text-gray-700">
             {sidebarOpen ? <HiX /> : <HiMenuAlt3 />}
           </button>
-          <Link to="/">
-            <img src={assets.logo} alt="Logo" className="w-28 md:w-36" />
+          <Link to="/" className="flex items-center max-w-[120px]">
+            <img
+              src={assets.logo}
+              alt="Logo"
+              className="max-w-[120px] w-full h-auto object-contain"
+            />
           </Link>
         </div>
         <div className="flex items-center gap-4 text-gray-700">

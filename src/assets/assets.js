@@ -41,6 +41,7 @@ import dashboard_icon from "./dashboard-svgrepo-com.svg";
 import create_coupon from "./coupon-svgrepo-com.svg";
 import coupon_list from "./coupon-2-svgrepo-com.svg";
 import user_list from "./user-svgrepo-com.svg";
+import subscriber_list from "./user-svgrepo-com.svg";
 import user_icon from "./user-icon.png";
 import whatsapp_icon from "./whatsapp-icon.png";
 import galaxy_sam from "./galaxy-sam.png";
@@ -87,6 +88,7 @@ export const assets = {
   box_icon,
   dashboard_icon,
   create_coupon,
+  subscriber_list,
   coupon_list,
   user_list,
   user_icon,
