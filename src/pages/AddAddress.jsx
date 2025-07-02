@@ -87,7 +87,7 @@ const AddAddress = () => {
                 </div>
 
                 <div className='grid grid-cols-2 gap-4'>
-                    <InputField handleChange={handleChange} address={address} name='zipcode' type="number" placeholder="Zip code" />
+                    <InputField handleChange={handleChange} address={address} name='zipcode' type="number" placeholder="pin code" />
                     <InputField handleChange={handleChange} address={address} name='country' type="text" placeholder="Country" />
                 </div>
 
