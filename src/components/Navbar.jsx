@@ -9,6 +9,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [location, setLocation] = useState('');
   const [showLocationPrompt, setShowLocationPrompt] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const {
     user, setUser, setShowUserLogin, navigate,
@@ -22,6 +23,7 @@ const Navbar = () => {
         toast.success(data.message);
         setUser(null);
         navigate('/');
+        setShowMobileMenu(false);
       } else {
         toast.error(data.message);
       }
@@ -41,7 +43,7 @@ const Navbar = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
 
-          {/* ✅ MOBILE: Logo + Search */}
+          {/* ✅ MOBILE */}
           <div className="flex sm:hidden items-center justify-between w-full">
             <NavLink to="/" onClick={() => setOpen(false)}>
               <img src={assets.logo} alt="Logo" className="h-10 object-contain" />
@@ -66,9 +68,38 @@ const Navbar = () => {
                 </span>
               </div>
 
-              <div className="text-center">
+              <div
+                className="text-center cursor-pointer relative"
+                onClick={() => {
+                  if (!user) {
+                    setShowUserLogin(true);
+                  } else {
+                    setShowMobileMenu(!showMobileMenu);
+                  }
+                }}
+              >
                 <img src={assets.user_icon} alt="User" className="w-6 mx-auto" />
                 <span className="text-xs text-gray-600">{user ? user.name : 'Login'}</span>
+
+                {user && showMobileMenu && (
+                  <ul className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow z-50 text-sm">
+                    <li
+                      onClick={() => {
+                        navigate('/my-orders');
+                        setShowMobileMenu(false);
+                      }}
+                      className="px-4 py-2 hover:bg-primary/10 cursor-pointer"
+                    >
+                      My Orders
+                    </li>
+                    <li
+                      onClick={logout}
+                      className="px-4 py-2 hover:bg-primary/10 cursor-pointer"
+                    >
+                      Logout
+                    </li>
+                  </ul>
+                )}
               </div>
 
               <button onClick={() => setOpen(!open)}>
