@@ -7,6 +7,12 @@ axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.withCredentials = true;
 axios.defaults.timeout = 10000;
 
+// Load token from localStorage and set header globally
+const savedToken = localStorage.getItem('token');
+if (savedToken) {
+  axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+}
+
 export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
@@ -22,7 +28,7 @@ export const AppContextProvider = ({ children }) => {
 
   const fetchSeller = async () => {
     try {
-      const { data } = await axios.get("/api/seller/is-auth", { withCredentials: true });
+      const { data } = await axios.get("/api/seller/is-auth");
       setIsSeller(data.success === true);
     } catch {
       setIsSeller(false);
@@ -31,7 +37,7 @@ export const AppContextProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const { data } = await axios.get("/api/user/is-auth", { withCredentials: true });
+      const { data } = await axios.get("/api/user/is-auth");
       if (data.success) {
         setUser(data.user);
         setCartItems(data.user.cartItems || {});
@@ -96,7 +102,14 @@ export const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchUser();
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      fetchUser();
+    } else {
+      setUser(null);
+      setCartItems({});
+    }
     fetchSeller();
     fetchProducts();
   }, []);
@@ -104,7 +117,7 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     const updateCart = async () => {
       try {
-        const { data } = await axios.post("/api/cart/update", { cartItems }, { withCredentials: true });
+        const { data } = await axios.post("/api/cart/update", { cartItems });
         if (!data.success) toast.error(data.message);
       } catch (error) {
         toast.error(error.message || "Failed to update cart");
