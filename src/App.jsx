@@ -1,38 +1,37 @@
-import React from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
-import Navbar from './components/Navbar'
-import Footer from './components/Footer'
+import React from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import { useAppContext } from './context/AppContext';
-import { Toaster } from "react-hot-toast"
+import { Toaster } from "react-hot-toast";
 
-
-import Home from './pages/Home'
-import AllProducts from './pages/AllProducts'
-import ProductCategory from './pages/ProductCategory'
-import ProductDetails from './pages/ProductDetails'
-import Cart from './pages/Cart'
-import AddAddress from './pages/AddAddress'
-import MyOrders from './pages/MyOrders'
-import Contact from './pages/Contact'
-import About from './pages/About'
-import Loading from './components/Loading'
-import Login from './components/Login'
+// Pages
+import Home from './pages/Home';
+import AllProducts from './pages/AllProducts';
+import ProductCategory from './pages/ProductCategory';
+import ProductDetails from './pages/ProductDetails';
+import Cart from './pages/Cart';
+import AddAddress from './pages/AddAddress';
+import MyOrders from './pages/MyOrders';
+import Contact from './pages/Contact';
+import About from './pages/About';
+import Loading from './components/Loading';
+import Login from './components/Login';
 
 // Seller
-import SellerLogin from './components/seller/SellerLogin'
-import SellerLayout from './pages/seller/SellerLayout'
-import AddProduct from './pages/seller/AddProduct'
-import ProductList from './pages/seller/ProductList'
-import Orders from './pages/seller/Orders'
-import SellerCreateCoupon from './pages/seller/SellerCreateCoupon'
-import EditProduct from './pages/seller/EditProduct'
-import UserList from './pages/seller/UserList'
-import AdminDashboard from './pages/seller/AdminDashboard'
-import CouponList from './pages/seller/CouponList'
-import AddCategory from './pages/seller/AddCategory'
-import CategoryList from './pages/seller/CategoryList'
+import SellerLogin from './components/seller/SellerLogin';
+import SellerLayout from './pages/seller/SellerLayout';
+import AddProduct from './pages/seller/AddProduct';
+import ProductList from './pages/seller/ProductList';
+import Orders from './pages/seller/Orders';
+import SellerCreateCoupon from './pages/seller/SellerCreateCoupon';
+import EditProduct from './pages/seller/EditProduct';
+import UserList from './pages/seller/UserList';
+import AdminDashboard from './pages/seller/AdminDashboard';
+import CouponList from './pages/seller/CouponList';
+import AddCategory from './pages/seller/AddCategory';
+import CategoryList from './pages/seller/CategoryList';
 import SubscriberList from './pages/seller/SubscriberList';
-
 
 const App = () => {
   const location = useLocation();
@@ -42,7 +41,7 @@ const App = () => {
   return (
     <div className='text-default min-h-screen text-gray-700 bg-white'>
       {!isSellerPath && <Navbar />}
-      {showUserLogin && <Login />} {/* Modal Login */}
+      {showUserLogin && <Login />}
       <Toaster />
 
       <div className={`${isSellerPath ? "" : "px-6 md:px-16 lg:px-24 xl:px-32"}`}>
@@ -58,7 +57,7 @@ const App = () => {
           <Route path='/loader' element={<Loading />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/about' element={<About />} />
-          <Route path='/login' element={<Login />} /> {/* ✅ Route-based Login */}
+          <Route path='/login' element={<Login />} />
 
           {/* Seller Routes */}
           <Route path='/seller' element={isSeller ? <SellerLayout /> : <SellerLogin />}>
@@ -80,7 +79,7 @@ const App = () => {
 
       {!isSellerPath && <Footer />}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
