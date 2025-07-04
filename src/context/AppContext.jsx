@@ -62,48 +62,20 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  const addToCart = async (itemId) => {
-    const token = localStorage.getItem('token');
-    const updatedCart = { ...cartItems, [itemId]: (cartItems[itemId] || 0) + 1 };
+  const addToCart = (itemId) => {
+    const updatedCart = { ...cartItems };
+    updatedCart[itemId] = (updatedCart[itemId] || 0) + 1;
     setCartItems(updatedCart);
-
-    try {
-      const { data } = await axios.post("/api/cart/add", { productId: itemId }, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true
-      });
-      if (data.success) {
-        toast.success("Added to Cart");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to add to cart");
-    }
+    toast.success("Added to Cart");
   };
 
-  const updateCartItem = async (itemId, quantity) => {
-    const token = localStorage.getItem('token');
+  const updateCartItem = (itemId, quantity) => {
     const updatedCart = { ...cartItems, [itemId]: quantity };
     setCartItems(updatedCart);
-
-    try {
-      const { data } = await axios.post("/api/cart/update-item", { productId: itemId, quantity }, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true
-      });
-      if (data.success) {
-        toast.success("Cart Updated");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update cart");
-    }
+    toast.success("Cart Updated");
   };
 
-  const removeFromCart = async (itemId) => {
-    const token = localStorage.getItem('token');
+  const removeFromCart = (itemId) => {
     const updatedCart = { ...cartItems };
     if (updatedCart[itemId] > 1) {
       updatedCart[itemId] -= 1;
@@ -111,20 +83,7 @@ export const AppContextProvider = ({ children }) => {
       delete updatedCart[itemId];
     }
     setCartItems(updatedCart);
-
-    try {
-      const { data } = await axios.post("/api/cart/remove", { productId: itemId }, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true
-      });
-      if (data.success) {
-        toast.success("Removed from Cart");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to remove from cart");
-    }
+    toast.success("Removed from Cart");
   };
 
   const getCartCount = () => Object.values(cartItems).reduce((sum, qty) => sum + qty, 0);
@@ -143,18 +102,16 @@ export const AppContextProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const syncCart = async () => {
-      const token = localStorage.getItem('token');
+    const updateCart = async () => {
       try {
-        await axios.post("/api/cart/update", { cartItems }, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true
-        });
+        const { data } = await axios.post("/api/cart/update", { cartItems }, { withCredentials: true });
+        if (!data.success) toast.error(data.message);
       } catch (error) {
-        toast.error(error.response?.data?.message || "Failed to sync cart");
+        toast.error(error.message || "Failed to update cart");
       }
     };
-    if (user) syncCart();
+
+    if (user) updateCart();
   }, [cartItems]);
 
   const value = {
