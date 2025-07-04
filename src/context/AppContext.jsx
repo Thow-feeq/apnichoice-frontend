@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.withCredentials = true;
 axios.defaults.timeout = 10000;
 
 export const AppContext = createContext();
@@ -35,6 +35,9 @@ export const AppContextProvider = ({ children }) => {
       if (data.success) {
         setUser(data.user);
         setCartItems(data.user.cartItems || {});
+      } else {
+        setUser(null);
+        setCartItems({});
       }
     } catch {
       setUser(null);
@@ -48,62 +51,48 @@ export const AppContextProvider = ({ children }) => {
       if (data.success) {
         setProducts(data.products);
       } else {
-        toast.error(data.message);
+        toast.error(data.message || "Failed to load products");
       }
     } catch (error) {
-      console.error("List Products Error:", error);
       if (error.code === "ECONNRESET" && retries > 0) {
-        toast.error("Connection reset. Retrying...");
         setTimeout(() => fetchProducts(retries - 1, delay * 2), delay);
       } else {
-        toast.error(error.message || "Failed to fetch products");
+        toast.error(error.message || "Failed to load products");
       }
     }
   };
 
   const addToCart = (itemId) => {
-    const cartData = structuredClone(cartItems || {});
-    if (cartData[itemId]) {
-      cartData[itemId] += 1;
-    } else {
-      cartData[itemId] = 1;
-    }
-    setCartItems(cartData);
+    const updatedCart = { ...cartItems };
+    updatedCart[itemId] = (updatedCart[itemId] || 0) + 1;
+    setCartItems(updatedCart);
     toast.success("Added to Cart");
   };
 
   const updateCartItem = (itemId, quantity) => {
-    const cartData = structuredClone(cartItems || {});
-    cartData[itemId] = quantity;
-    setCartItems(cartData);
+    const updatedCart = { ...cartItems, [itemId]: quantity };
+    setCartItems(updatedCart);
     toast.success("Cart Updated");
   };
 
   const removeFromCart = (itemId) => {
-    const cartData = structuredClone(cartItems || {});
-    if (cartData[itemId]) {
-      cartData[itemId] -= 1;
-      if (cartData[itemId] === 0) {
-        delete cartData[itemId];
-      }
+    const updatedCart = { ...cartItems };
+    if (updatedCart[itemId] > 1) {
+      updatedCart[itemId] -= 1;
+    } else {
+      delete updatedCart[itemId];
     }
-    setCartItems(cartData);
+    setCartItems(updatedCart);
     toast.success("Removed from Cart");
   };
 
-  const getCartCount = () => {
-    return Object.values(cartItems || {}).reduce((a, b) => a + b, 0);
-  };
+  const getCartCount = () => Object.values(cartItems).reduce((sum, qty) => sum + qty, 0);
 
   const getCartAmount = () => {
-    let totalAmount = 0;
-    for (const itemId in cartItems) {
-      const itemInfo = products.find((p) => p._id === itemId);
-      if (itemInfo && cartItems[itemId] > 0) {
-        totalAmount += itemInfo.offerPrice * cartItems[itemId];
-      }
-    }
-    return Math.floor(totalAmount * 100) / 100;
+    return Math.floor(Object.entries(cartItems).reduce((total, [id, qty]) => {
+      const product = products.find(p => p._id === id);
+      return total + (product ? product.offerPrice * qty : 0);
+    }, 0) * 100) / 100;
   };
 
   useEffect(() => {
@@ -115,11 +104,7 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     const updateCart = async () => {
       try {
-        const { data } = await axios.post(
-          "/api/cart/update",
-          { cartItems },
-          { withCredentials: true }  // ✅ FIXED: Ensure cookies are sent
-        );
+        const { data } = await axios.post("/api/cart/update", { cartItems }, { withCredentials: true });
         if (!data.success) toast.error(data.message);
       } catch (error) {
         toast.error(error.message || "Failed to update cart");
@@ -133,8 +118,8 @@ export const AppContextProvider = ({ children }) => {
     navigate,
     user,
     setUser,
-    setIsSeller,
     isSeller,
+    setIsSeller,
     showUserLogin,
     setShowUserLogin,
     products,
@@ -145,8 +130,8 @@ export const AppContextProvider = ({ children }) => {
     cartItems,
     searchQuery,
     setSearchQuery,
-    getCartAmount,
     getCartCount,
+    getCartAmount,
     axios,
     fetchProducts,
     setCartItems,
