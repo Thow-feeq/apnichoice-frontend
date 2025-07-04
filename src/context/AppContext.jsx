@@ -22,7 +22,7 @@ export const AppContextProvider = ({ children }) => {
 
   const fetchSeller = async () => {
     try {
-      const { data } = await axios.get("/api/seller/is-auth");
+      const { data } = await axios.get("/api/seller/is-auth", { withCredentials: true });
       setIsSeller(data.success === true);
     } catch {
       setIsSeller(false);
@@ -31,14 +31,14 @@ export const AppContextProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const { data } = await axios.get("api/user/is-auth");
+      const { data } = await axios.get("/api/user/is-auth", { withCredentials: true });
       if (data.success) {
         setUser(data.user);
-        setCartItems(data.user.cartItems || {}); // ✅ fallback to {}
+        setCartItems(data.user.cartItems || {});
       }
     } catch {
       setUser(null);
-      setCartItems({}); // ✅ fallback to {}
+      setCartItems({});
     }
   };
 
@@ -62,14 +62,12 @@ export const AppContextProvider = ({ children }) => {
   };
 
   const addToCart = (itemId) => {
-    const cartData = structuredClone(cartItems || {}); // ✅ safe clone
-
+    const cartData = structuredClone(cartItems || {});
     if (cartData[itemId]) {
       cartData[itemId] += 1;
     } else {
       cartData[itemId] = 1;
     }
-
     setCartItems(cartData);
     toast.success("Added to Cart");
   };
@@ -117,7 +115,11 @@ export const AppContextProvider = ({ children }) => {
   useEffect(() => {
     const updateCart = async () => {
       try {
-        const { data } = await axios.post("/api/cart/update", { cartItems });
+        const { data } = await axios.post(
+          "/api/cart/update",
+          { cartItems },
+          { withCredentials: true }  // ✅ FIXED: Ensure cookies are sent
+        );
         if (!data.success) toast.error(data.message);
       } catch (error) {
         toast.error(error.message || "Failed to update cart");
