@@ -4,8 +4,6 @@ import toast from "react-hot-toast";
 import axios from "axios";
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
-axios.defaults.withCredentials = true;
-axios.defaults.timeout = 10000;
 
 export const AppContext = createContext();
 
@@ -20,7 +18,7 @@ export const AppContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 🔑 Token header helper
+  // 🔑 Get token headers
   const authHeaders = () => {
     const token = localStorage.getItem('token');
     return token ? { Authorization: `Bearer ${token}` } : {};
