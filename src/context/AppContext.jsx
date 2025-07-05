@@ -13,11 +13,18 @@ export const AppContextProvider = ({ children }) => {
   const currency = import.meta.env.VITE_CURRENCY;
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
   const [isSeller, setIsSeller] = useState(false);
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [products, setProducts] = useState([]);
-  const [cartItems, setCartItems] = useState({});
+  const [cartItems, setCartItems] = useState(() => {
+    const storedCart = localStorage.getItem('cartItems');
+    return storedCart ? JSON.parse(storedCart) : {};
+  });
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchSeller = async () => {
@@ -31,14 +38,18 @@ export const AppContextProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const { data } = await axios.get("api/user/is-auth");
+      const { data } = await axios.get("/api/user/is-auth");
       if (data.success) {
         setUser(data.user);
-        setCartItems(data.user.cartItems || {}); // ✅ fallback to {}
+        localStorage.setItem('user', JSON.stringify(data.user));
+        setCartItems(data.user.cartItems || {});
+        localStorage.setItem('cartItems', JSON.stringify(data.user.cartItems || {}));
       }
     } catch {
       setUser(null);
-      setCartItems({}); // ✅ fallback to {}
+      localStorage.removeItem('user');
+      setCartItems({});
+      localStorage.removeItem('cartItems');
     }
   };
 
@@ -62,50 +73,42 @@ export const AppContextProvider = ({ children }) => {
   };
 
   const addToCart = (itemId) => {
-    const cartData = structuredClone(cartItems || {}); // ✅ safe clone
-
-    if (cartData[itemId]) {
-      cartData[itemId] += 1;
-    } else {
-      cartData[itemId] = 1;
-    }
-
+    const cartData = { ...cartItems };
+    cartData[itemId] = (cartData[itemId] || 0) + 1;
     setCartItems(cartData);
+    localStorage.setItem('cartItems', JSON.stringify(cartData));
     toast.success("Added to Cart");
   };
 
   const updateCartItem = (itemId, quantity) => {
-    const cartData = structuredClone(cartItems || {});
-    cartData[itemId] = quantity;
+    const cartData = { ...cartItems, [itemId]: quantity };
     setCartItems(cartData);
+    localStorage.setItem('cartItems', JSON.stringify(cartData));
     toast.success("Cart Updated");
   };
 
   const removeFromCart = (itemId) => {
-    const cartData = structuredClone(cartItems || {});
+    const cartData = { ...cartItems };
     if (cartData[itemId]) {
       cartData[itemId] -= 1;
-      if (cartData[itemId] === 0) {
-        delete cartData[itemId];
-      }
+      if (cartData[itemId] <= 0) delete cartData[itemId];
+      setCartItems(cartData);
+      localStorage.setItem('cartItems', JSON.stringify(cartData));
+      toast.success("Removed from Cart");
     }
-    setCartItems(cartData);
-    toast.success("Removed from Cart");
   };
 
   const getCartCount = () => {
-    return Object.values(cartItems || {}).reduce((a, b) => a + b, 0);
+    return Object.values(cartItems).reduce((a, b) => a + b, 0);
   };
 
   const getCartAmount = () => {
-    let totalAmount = 0;
+    let total = 0;
     for (const itemId in cartItems) {
-      const itemInfo = products.find((p) => p._id === itemId);
-      if (itemInfo && cartItems[itemId] > 0) {
-        totalAmount += itemInfo.offerPrice * cartItems[itemId];
-      }
+      const product = products.find(p => p._id === itemId);
+      if (product) total += product.offerPrice * cartItems[itemId];
     }
-    return Math.floor(totalAmount * 100) / 100;
+    return Math.floor(total * 100) / 100;
   };
 
   useEffect(() => {
@@ -123,16 +126,19 @@ export const AppContextProvider = ({ children }) => {
         toast.error(error.message || "Failed to update cart");
       }
     };
-
     if (user) updateCart();
   }, [cartItems]);
 
   const value = {
     navigate,
     user,
-    setUser,
-    setIsSeller,
+    setUser: (user) => {
+      setUser(user);
+      if (user) localStorage.setItem('user', JSON.stringify(user));
+      else localStorage.removeItem('user');
+    },
     isSeller,
+    setIsSeller,
     showUserLogin,
     setShowUserLogin,
     products,
@@ -141,13 +147,16 @@ export const AppContextProvider = ({ children }) => {
     updateCartItem,
     removeFromCart,
     cartItems,
+    setCartItems: (cart) => {
+      setCartItems(cart);
+      localStorage.setItem('cartItems', JSON.stringify(cart));
+    },
     searchQuery,
     setSearchQuery,
     getCartAmount,
     getCartCount,
     axios,
     fetchProducts,
-    setCartItems,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
