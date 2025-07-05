@@ -12,13 +12,10 @@ const Login = () => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(`/api/user/${state}`, { name, email, password }, { withCredentials: true });
-
+      const { data } = await axios.post(`/api/user/${state}`, { name, email, password });
       if (data.success) {
-        // ✅ Store token and user in localStorage
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-
         setUser(data.user);
         setShowUserLogin(false);
         navigate('/');
