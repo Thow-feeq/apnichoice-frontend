@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-// Set Axios defaults
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.withCredentials = true;
 axios.defaults.timeout = 10000;
@@ -21,10 +20,15 @@ export const AppContextProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch authenticated user
+  // 🔑 Token header helper
+  const authHeaders = () => {
+    const token = localStorage.getItem('token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
   const fetchUser = async () => {
     try {
-      const { data } = await axios.get("/api/user/is-auth");
+      const { data } = await axios.get("/api/user/is-auth", { headers: authHeaders() });
       if (data.success) {
         setUser(data.user);
         setCartItems(data.user.cartItems || {});
@@ -32,23 +36,21 @@ export const AppContextProvider = ({ children }) => {
         setUser(null);
         setCartItems({});
       }
-    } catch (error) {
+    } catch {
       setUser(null);
       setCartItems({});
     }
   };
 
-  // Fetch seller authentication
   const fetchSeller = async () => {
     try {
-      const { data } = await axios.get("/api/seller/is-auth");
+      const { data } = await axios.get("/api/seller/is-auth", { headers: authHeaders() });
       setIsSeller(data.success === true);
     } catch {
       setIsSeller(false);
     }
   };
 
-  // Fetch products with retry
   const fetchProducts = async (retries = 3, delay = 1000) => {
     try {
       const { data } = await axios.get("/api/product/list");
@@ -66,21 +68,18 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  // Add item to cart
   const addToCart = (itemId) => {
     const updatedCart = { ...cartItems, [itemId]: (cartItems[itemId] || 0) + 1 };
     setCartItems(updatedCart);
     toast.success("Added to Cart");
   };
 
-  // Update item quantity
   const updateCartItem = (itemId, quantity) => {
     const updatedCart = { ...cartItems, [itemId]: quantity };
     setCartItems(updatedCart);
     toast.success("Cart Updated");
   };
 
-  // Remove item from cart
   const removeFromCart = (itemId) => {
     const updatedCart = { ...cartItems };
     if (updatedCart[itemId] > 1) {
@@ -92,10 +91,8 @@ export const AppContextProvider = ({ children }) => {
     toast.success("Removed from Cart");
   };
 
-  // Get cart item count
   const getCartCount = () => Object.values(cartItems).reduce((sum, qty) => sum + qty, 0);
 
-  // Get cart total amount
   const getCartAmount = () => {
     return Math.floor(
       Object.entries(cartItems).reduce((total, [id, qty]) => {
@@ -105,12 +102,11 @@ export const AppContextProvider = ({ children }) => {
     ) / 100;
   };
 
-  // Sync cart to backend when changed
   useEffect(() => {
     const syncCart = async () => {
       try {
         if (user) {
-          const { data } = await axios.post("/api/cart/update", { cartItems });
+          const { data } = await axios.post("/api/cart/update", { cartItems }, { headers: authHeaders() });
           if (!data.success) toast.error(data.message);
         }
       } catch (error) {
@@ -121,8 +117,11 @@ export const AppContextProvider = ({ children }) => {
     syncCart();
   }, [cartItems]);
 
-  // Initial load
   useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
     fetchUser();
     fetchSeller();
     fetchProducts();

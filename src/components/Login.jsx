@@ -15,6 +15,10 @@ const Login = () => {
       const { data } = await axios.post(`/api/user/${state}`, { name, email, password }, { withCredentials: true });
 
       if (data.success) {
+        // ✅ Store token and user in localStorage
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
         setUser(data.user);
         setShowUserLogin(false);
         navigate('/');
@@ -31,7 +35,6 @@ const Login = () => {
     <div onClick={() => setShowUserLogin(false)} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 mt-20">
       <div onClick={(e) => e.stopPropagation()} className="w-full max-w-3xl max-h-[95vh] overflow-y-auto bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col md:flex-row transition-all">
         
-        {/* Left */}
         <div className="hidden md:flex flex-col justify-center items-center bg-gradient-to-tr from-indigo-600 to-purple-600 p-8 text-white w-1/2">
           <h2 className="text-3xl font-bold mb-4">Welcome</h2>
           <p className="text-center text-sm mb-6 px-4">
@@ -40,7 +43,6 @@ const Login = () => {
           <img src="/src/assets/bright-vision.png" alt="illustration" className="w-60 h-36 opacity-90" />
         </div>
 
-        {/* Right */}
         <div className="flex-1 p-6 sm:p-10">
           <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
             {state === 'login' ? 'Sign In' : 'Register'}
