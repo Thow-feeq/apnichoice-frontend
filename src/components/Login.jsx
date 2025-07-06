@@ -20,7 +20,7 @@ const Login = () => {
       });
 
       if (data.success) {
-        localStorage.setItem('token', data.token);
+       // localStorage.setItem('token', data.token);
         localStorage.setItem('sellerId', data.user._id);
         setUser(data.user);
         setShowUserLogin(false);

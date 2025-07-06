@@ -13,7 +13,7 @@ export const AppContextProvider = ({ children }) => {
   const currency = import.meta.env.VITE_CURRENCY;
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState(() => {  
     const storedUser = localStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
   });
