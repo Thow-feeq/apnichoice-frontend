@@ -13,7 +13,7 @@ export const AppContextProvider = ({ children }) => {
   const currency = import.meta.env.VITE_CURRENCY;
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState(() => {  
     const storedUser = localStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
   });
@@ -72,20 +72,12 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  const addToCart = async (itemId) => {
+  const addToCart = (itemId) => {
     const cartData = { ...cartItems };
     cartData[itemId] = (cartData[itemId] || 0) + 1;
     setCartItems(cartData);
     localStorage.setItem('cartItems', JSON.stringify(cartData));
-
-    try {
-      const { data } = await axios.post("/api/cart/update", { cartItems: cartData });
-      if (!data.success) toast.error(data.message);
-      else toast.success("Added to Cart");
-    } catch (err) {
-      toast.error("You must be logged in to add to cart.");
-      console.error("Add to Cart Error:", err.message);
-    }
+    toast.success("Added to Cart");
   };
 
   const updateCartItem = (itemId, quantity) => {
