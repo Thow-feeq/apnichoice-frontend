@@ -1,8 +1,12 @@
-// AppContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import axios from "../utils/axiosInstance"; // ✅ Updated
+import axios from "axios";
+
+// Axios config
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.timeout = 10000;
 
 export const AppContext = createContext();
 
@@ -20,17 +24,34 @@ export const AppContextProvider = ({ children }) => {
   });
   const [searchQuery, setSearchQuery] = useState("");
 
+  // ✅ Load token from localStorage into axios
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+  }, []);
+
+  // ✅ Save token into localStorage and axios
   const setAuthToken = (token) => {
     localStorage.setItem("token", token);
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   };
 
+  // ✅ Logout User and clear everything
   const logoutUser = async () => {
     try {
       await axios.get("/api/user/logout");
 
+      // Clear user & cart
       setUser(null);
       setCartItems({});
-      localStorage.clear();
+      localStorage.removeItem("user");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("token");
+
+      // Remove token from axios
+      delete axios.defaults.headers.common["Authorization"];
 
       toast.success("Logged out successfully");
       navigate("/");
@@ -171,7 +192,7 @@ export const AppContextProvider = ({ children }) => {
     axios,
     fetchProducts,
     setAuthToken,
-    logoutUser,
+    logoutUser, // ✅ Exposed logout method
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
