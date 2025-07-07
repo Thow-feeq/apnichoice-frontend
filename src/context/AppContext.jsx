@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-// Axios config
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.timeout = 10000;
@@ -18,39 +17,28 @@ export const AppContextProvider = ({ children }) => {
   const [isSeller, setIsSeller] = useState(false);
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true); // 👈 NEW
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [cartItems, setCartItems] = useState(() => {
     const storedCart = localStorage.getItem("cartItems");
     return storedCart ? JSON.parse(storedCart) : {};
   });
-  const [searchQuery, setSearchQuery] = useState("");
 
-  // ✅ Load token from localStorage into axios
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    }
-  }, []);
-
-  // ✅ Save token into localStorage and axios
   const setAuthToken = (token) => {
     localStorage.setItem("token", token);
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   };
 
-  // ✅ Logout User and clear everything
   const logoutUser = async () => {
     try {
       await axios.get("/api/user/logout");
 
-      // Clear user & cart
       setUser(null);
       setCartItems({});
       localStorage.removeItem("user");
       localStorage.removeItem("cartItems");
       localStorage.removeItem("token");
-
-      // Remove token from axios
       delete axios.defaults.headers.common["Authorization"];
 
       toast.success("Logged out successfully");
@@ -78,12 +66,19 @@ export const AppContextProvider = ({ children }) => {
         localStorage.setItem("user", JSON.stringify(data.user));
         setCartItems(data.user.cartItems || {});
         localStorage.setItem("cartItems", JSON.stringify(data.user.cartItems || {}));
+      } else {
+        setUser(null);
+        localStorage.removeItem("user");
+        setCartItems({});
+        localStorage.removeItem("cartItems");
       }
     } catch {
       setUser(null);
       localStorage.removeItem("user");
       setCartItems({});
       localStorage.removeItem("cartItems");
+    } finally {
+      setLoading(false); // ✅ Stop loading after fetch
     }
   };
 
@@ -145,8 +140,18 @@ export const AppContextProvider = ({ children }) => {
     return Math.floor(total * 100) / 100;
   };
 
+  // ✅ On first load: attach token, then fetch user/seller/products
   useEffect(() => {
-    fetchUser();
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      fetchUser(); // ✅ fetch user after setting header
+    } else {
+      setUser(null);
+      setCartItems({});
+      setLoading(false);
+    }
+
     fetchSeller();
     fetchProducts();
   }, []);
@@ -192,8 +197,11 @@ export const AppContextProvider = ({ children }) => {
     axios,
     fetchProducts,
     setAuthToken,
-    logoutUser, // ✅ Exposed logout method
+    logoutUser,
   };
+
+  // ✅ Delay rendering until loading finishes (prevents flicker/logout)
+  if (loading) return null;
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
