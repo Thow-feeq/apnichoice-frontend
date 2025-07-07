@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
+// Axios config
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.timeout = 10000;
@@ -13,11 +14,7 @@ export const AppContextProvider = ({ children }) => {
   const currency = import.meta.env.VITE_CURRENCY;
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
-
+  const [user, setUser] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [products, setProducts] = useState([]);
@@ -27,7 +24,7 @@ export const AppContextProvider = ({ children }) => {
   });
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ✅ Inject token into axios headers on app load
+  // ✅ Load token from localStorage into axios
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -35,9 +32,33 @@ export const AppContextProvider = ({ children }) => {
     }
   }, []);
 
+  // ✅ Save token into localStorage and axios
   const setAuthToken = (token) => {
     localStorage.setItem("token", token);
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  };
+
+  // ✅ Logout User and clear everything
+  const logoutUser = async () => {
+    try {
+      await axios.get("/api/user/logout");
+
+      // Clear user & cart
+      setUser(null);
+      setCartItems({});
+      localStorage.removeItem("user");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("token");
+
+      // Remove token from axios
+      delete axios.defaults.headers.common["Authorization"];
+
+      toast.success("Logged out successfully");
+      navigate("/");
+    } catch (error) {
+      toast.error("Logout failed");
+      console.error(error);
+    }
   };
 
   const fetchSeller = async () => {
@@ -170,7 +191,8 @@ export const AppContextProvider = ({ children }) => {
     getCartCount,
     axios,
     fetchProducts,
-    setAuthToken, // ✅ included to use in login
+    setAuthToken,
+    logoutUser, // ✅ Exposed logout method
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
