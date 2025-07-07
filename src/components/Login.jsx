@@ -4,7 +4,8 @@ import { assets, footerLinks } from "../assets/assets";
 import toast from 'react-hot-toast';
 
 const Login = () => {
-  const { setShowUserLogin, setUser, axios, navigate } = useAppContext();
+  const { setShowUserLogin, setUser, setAuthToken, axios, navigate } = useAppContext();
+
   const [state, setState] = useState('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -20,8 +21,8 @@ const Login = () => {
       });
 
       if (data.success) {
-       // localStorage.setItem('token', data.token);
-        localStorage.setItem('sellerId', data.user._id);
+        setAuthToken(data.token); // ✅ sets token in localStorage + axios header
+        localStorage.setItem('sellerId', data.user._id); // optional
         setUser(data.user);
         setShowUserLogin(false);
         navigate('/');
@@ -30,7 +31,7 @@ const Login = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || "Something went wrong");
     }
   };
 
