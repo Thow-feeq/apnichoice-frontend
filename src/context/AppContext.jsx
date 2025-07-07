@@ -27,6 +27,7 @@ export const AppContextProvider = ({ children }) => {
   // ✅ Load token from localStorage into axios
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log("🪵 Loaded token on app start:", token); // Debug log
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
