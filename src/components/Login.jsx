@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
+import { assets, footerLinks } from "../assets/assets";
 import toast from 'react-hot-toast';
 
 const Login = () => {
@@ -20,16 +21,17 @@ const Login = () => {
       });
 
       if (data.success) {
-        setAuthToken(data.token);        // ✅ sets localStorage + axios
-        setUser(data.user);              // ✅ sets user context + localStorage
+        setAuthToken(data.token); // ✅ sets token in localStorage + axios header
+        localStorage.setItem('sellerId', data.user._id); // optional
+        setUser(data.user);
         setShowUserLogin(false);
+        navigate('/');
         toast.success(`${state === 'login' ? 'Logged in' : 'Registered'} successfully!`);
-        navigate('/');                   // ✅ redirect after success
       } else {
-        toast.error(data.message || 'Something went wrong');
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message || 'Login/Register failed');
+      toast.error(error.message || "Something went wrong");
     }
   };
 
@@ -51,13 +53,13 @@ const Login = () => {
               : 'Join now to unlock a personalized experience!'}
           </p>
           <img
-            src={assets.bright_vision || "/assets/bright-vision.png"} // Use from assets if defined
+            src="http://localhost:5173/src/assets/bright-vision.png"
             alt="illustration"
             className="w-60 h-36 opacity-90"
           />
         </div>
 
-        {/* Right Side */}
+        {/* Right Side - Form */}
         <div className="flex-1 p-6 sm:p-10">
           <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
             {state === 'login' ? 'Sign In' : 'Register'}
