@@ -20,8 +20,11 @@ const Login = () => {
       });
 
       if (data.success) {
+        // ✅ Save token & set Axios header
         localStorage.setItem('token', data.token);
         localStorage.setItem('sellerId', data.user._id);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+
         setUser(data.user);
         setShowUserLogin(false);
         navigate('/');
