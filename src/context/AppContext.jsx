@@ -42,11 +42,11 @@ export const AppContextProvider = ({ children }) => {
   }, []);
 
   const logoutUser = () => {
-    setUser(null);
-    localStorage.removeItem("user");
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     localStorage.removeItem("cartItems");
     delete axios.defaults.headers.common["Authorization"];
+    setUser(null);
     setCartItems({});
   };
 
