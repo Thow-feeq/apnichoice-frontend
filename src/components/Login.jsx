@@ -20,7 +20,6 @@ const Login = () => {
       });
 
       if (data.success) {
-        localStorage.setItem('token', data.token);
         axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`; // ✅ Set token globally
 
         localStorage.setItem('user', JSON.stringify(data.user));

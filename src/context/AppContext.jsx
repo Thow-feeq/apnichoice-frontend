@@ -27,42 +27,32 @@ export const AppContextProvider = ({ children }) => {
   });
   const [searchQuery, setSearchQuery] = useState("");
 
-  // 🔐 Restore Authorization token on page load
-  useEffect(() => {
-    const savedToken = localStorage.getItem("token");
-    if (savedToken) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
-    } else {
-      delete axios.defaults.headers.common["Authorization"];
-    }
-
-    fetchUser();
-    fetchSeller();
-    fetchProducts();
-  }, []);
-
   const logoutUser = () => {
-    localStorage.removeItem("token");
+    console.log("🔴 Logging out user (clearing localStorage)");
+    setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setCartItems({});
     localStorage.removeItem("cartItems");
     delete axios.defaults.headers.common["Authorization"];
-    setUser(null);
-    setCartItems({});
   };
 
   const fetchUser = async () => {
     try {
       const { data } = await axios.get("/api/user/is-auth");
       if (data.success) {
+        console.log("✅ Fetched user:", data.user);
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
         setCartItems(data.user.cartItems || {});
         localStorage.setItem("cartItems", JSON.stringify(data.user.cartItems || {}));
       } else {
-        logoutUser(); // 🔴 handle expired or invalid token
+        console.log("⚠️ is-auth failed:", data.message);
+        logoutUser();
       }
-    } catch {
-      logoutUser(); // 🔴 force logout on error
+    } catch (err) {
+      console.log("❌ fetchUser error:", err.message);
+      logoutUser();
     }
   };
 
@@ -84,7 +74,9 @@ export const AppContextProvider = ({ children }) => {
         toast.error(data.message);
       }
     } catch (error) {
-      if (retries > 0 && error.code === "ECONNRESET") {
+      console.error("List Products Error:", error);
+      if (error.code === "ECONNRESET" && retries > 0) {
+        toast.error("Connection reset. Retrying...");
         setTimeout(() => fetchProducts(retries - 1, delay * 2), delay);
       } else {
         toast.error(error.message || "Failed to fetch products");
@@ -131,7 +123,27 @@ export const AppContextProvider = ({ children }) => {
     return Math.floor(total * 100) / 100;
   };
 
-  // 🔁 Auto-sync cartItems to backend if user is logged in
+  useEffect(() => {
+    const savedToken = localStorage.getItem("token");
+
+    console.log("📦 Loaded token from localStorage:", savedToken);
+
+    if (savedToken) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
+      console.log("🔐 Authorization header set in axios");
+    } else {
+      delete axios.defaults.headers.common["Authorization"];
+      console.log("🚫 Authorization header removed from axios");
+    }
+
+    // 🔁 Delay ensures header is set before fetchUser fires
+    setTimeout(() => {
+      fetchUser();
+      fetchSeller();
+      fetchProducts();
+    }, 0);
+  }, []);
+
   useEffect(() => {
     const updateCart = async () => {
       try {
@@ -147,19 +159,11 @@ export const AppContextProvider = ({ children }) => {
   const value = {
     navigate,
     user,
-    setUser: (user, token) => {
+    setUser: (user) => {
       setUser(user);
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
-        if (token) {
-          localStorage.setItem("token", token);
-          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        }
-      } else {
-        logoutUser();
-      }
+      if (user) localStorage.setItem("user", JSON.stringify(user));
+      else localStorage.removeItem("user");
     },
-    logoutUser,
     isSeller,
     setIsSeller,
     showUserLogin,
