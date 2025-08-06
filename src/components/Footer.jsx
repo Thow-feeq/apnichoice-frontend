@@ -81,14 +81,14 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Text */}
-                <p className="pb-6 text-center text-sm md:text-base text-gray-400">
+                {/* <p className="pb-6 text-center text-sm md:text-base text-gray-400">
                     © {new Date().getFullYear()} Webionix.in – All Rights Reserved.
-                </p>
+                </p> */}
             </footer>
 
             {/* WhatsApp Button */}
             <a
-                href="https://wa.me/6374540634"
+                href="https://wa.me/9600158380"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="fixed bottom-6 left-6 z-30"

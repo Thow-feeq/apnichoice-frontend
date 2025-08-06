@@ -20,9 +20,8 @@ const Login = () => {
       });
 
       if (data.success) {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`; // ✅ Set token globally
-
-        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('sellerId', data.user._id);
         setUser(data.user);
         setShowUserLogin(false);
         navigate('/');
@@ -31,7 +30,7 @@ const Login = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message || "Login/Register failed");
+      toast.error(error.message);
     }
   };
 
