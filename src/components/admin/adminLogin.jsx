@@ -11,7 +11,7 @@ const AdminLogin = () => {
         try {
             event.preventDefault();
 
-            const backendURL = 'http://localhost:4000'; // <-- your Express backend
+            const backendURL = 'https://apnichoice-backend.onrender.com'; // <-- your Express backend
             const { data } = await axios.post(`${backendURL}/api/admin/login`, { email, password });
 
             if (data.success) {
@@ -25,7 +25,7 @@ const AdminLogin = () => {
             toast.error(error.response?.data?.message || error.message || "Login failed");
         }
     };
-    
+
     useEffect(() => {
         if (isSeller) {
             navigate("/admin");
