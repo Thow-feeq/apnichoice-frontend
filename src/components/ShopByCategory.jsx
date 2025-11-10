@@ -5,7 +5,7 @@ import { assets } from '../assets/assets';
 const categories = [
   {
     title: "Mens Wear",
-    image: assets.textile_one, // replace with your textile image
+    image: assets.textile_one,
     url: "/products/menswear",
   },
   {
@@ -31,8 +31,12 @@ const ShopByCategory = () => {
       
       {/* Section Header */}
       <div className="max-w-7xl mx-auto text-center mb-12">
-        <h2 className="text-4xl font-extrabold text-gray-900">Shop by Textile Category</h2>
-        <p className="mt-2 text-gray-600 text-lg">Explore premium fabrics and trending fashion styles</p>
+        <h2 className="text-4xl font-extrabold text-[#800000]">
+          Shop by Vastraa Dhee Fashions Category
+        </h2>
+        <p className="mt-2 text-[#4d0000] text-lg">
+          Explore premium fabrics and trending fashion styles
+        </p>
       </div>
 
       {/* Category Grid */}
@@ -51,7 +55,7 @@ const ShopByCategory = () => {
             />
 
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#800000]/50 via-[#800000]/10 to-transparent opacity-80 group-hover:opacity-100 transition duration-500" />
 
             {/* Category Title */}
             <div className="absolute bottom-4 left-4 text-white text-lg md:text-xl font-semibold z-10 drop-shadow-lg">
@@ -59,7 +63,7 @@ const ShopByCategory = () => {
             </div>
 
             {/* Optional "Shop Now" badge */}
-            <span className="absolute top-3 right-3 bg-rose-600 text-white text-xs px-2 py-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition">
+            <span className="absolute top-3 right-3 bg-[#800000] text-white text-xs px-2 py-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition">
               Shop Now
             </span>
           </a>

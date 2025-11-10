@@ -71,16 +71,16 @@ const MiddleBanner = () => {
             ))}
           </Swiper>
 
-          {/* Optional overlay text */}
-          <div className="absolute bottom-4 left-6 bg-black/50 text-white px-4 py-2 rounded-md text-lg font-semibold">
+          {/* Overlay text */}
+          <div className="absolute bottom-4 left-6 bg-[#800000]/80 text-white px-4 py-2 rounded-md text-lg font-semibold">
             Premium Textile Collection
           </div>
         </a>
 
         {/* ✅ Right: Textile Categories */}
-        <div className="w-full md:w-1/2 bg-gradient-to-br from-white to-gray-50 p-6 md:p-10 rounded-2xl shadow-xl border border-gray-100">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center md:text-left">
-            Explore Textile Categories
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-white to-[#fff5f5] p-6 md:p-10 rounded-2xl shadow-xl border border-[#f0e5e5]">
+          <h2 className="text-3xl font-bold text-[#800000] mb-8 text-center md:text-left">
+            Explore Vastraa Dhee Fashions Categories
           </h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-2 gap-6">
@@ -88,10 +88,10 @@ const MiddleBanner = () => {
               <a
                 key={index}
                 href={cat.url}
-                className="group relative bg-white rounded-xl shadow-md border border-gray-200 p-5 flex flex-col items-center text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-green-400"
+                className="group relative bg-white rounded-xl shadow-md border border-[#f0e5e5] p-5 flex flex-col items-center text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-[#800000]"
               >
                 {/* Glowing icon */}
-                <div className="w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-gradient-to-tr from-green-100 to-green-200 group-hover:from-green-200 group-hover:to-green-300 transition">
+                <div className="w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#ffe5e5] to-[#ffc0c0] group-hover:from-[#ffcccc] group-hover:to-[#ff9999] transition">
                   <img
                     src={cat.image}
                     alt={cat.title}
@@ -99,13 +99,13 @@ const MiddleBanner = () => {
                   />
                 </div>
 
-                <span className="text-gray-800 font-semibold text-base group-hover:text-green-700 transition">
+                <span className="text-[#800000] font-semibold text-base group-hover:text-[#660000] transition">
                   {cat.title}
                 </span>
 
                 {/* Badge */}
                 {cat.badge && (
-                  <span className="absolute top-2 right-2 text-xs bg-green-600 text-white px-2 py-0.5 rounded-full shadow-sm">
+                  <span className="absolute top-2 right-2 text-xs bg-[#800000] text-white px-2 py-0.5 rounded-full shadow-sm">
                     {cat.badge}
                   </span>
                 )}

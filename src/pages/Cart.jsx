@@ -155,7 +155,11 @@ const Cart = () => {
           <div key={index} className="grid grid-cols-[2fr_1fr_1fr] items-center text-sm md:text-base font-medium pt-3 text-gray-500">
             <div className="flex items-center gap-3 md:gap-6">
               <div onClick={() => { navigate(`/products/${product.category.toLowerCase()}/${product._id}`); scrollTo(0, 0); }} className="cursor-pointer w-24 h-24 flex items-center justify-center border border-gray-300 rounded">
-                <img className="max-w-full h-full object-cover" src={product.image[0]} alt={product.name} />
+                <img
+                  className="max-w-full h-full object-cover"
+                  src={product.images && product.images.length > 0 ? product.images[0] : '/fallback-image.png'}
+                  alt={product.name}
+                />
               </div>
               <div>
                 <p className="hidden md:block font-semibold">{product.name}</p>

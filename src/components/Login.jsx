@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { assets, footerLinks } from "../assets/assets";
+import { assets } from '../assets/assets';
 import toast from 'react-hot-toast';
 
 const Login = () => {
@@ -41,21 +41,18 @@ const Login = () => {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-3xl max-h-[95vh] overflow-y-auto bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col md:flex-row transition-all"
+        className="w-full max-w-3xl max-h-[95vh] overflow-y-auto bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col md:flex-row transition-all"
       >
-        {/* Left Side */}
-        <div className="hidden md:flex flex-col justify-center items-center bg-gradient-to-tr from-indigo-600 to-purple-600 p-8 text-white w-1/2">
+        {/* Left Side - Gradient Panel */}
+        <div className="hidden md:flex flex-col justify-center items-center bg-gradient-to-tr from-[#800000] to-[#b30000] p-8 text-white w-1/2 rounded-l-2xl">
           <h2 className="text-3xl font-bold mb-4">Welcome</h2>
           <p className="text-center text-sm mb-6 px-4">
             {state === 'login'
-              ? 'Sign in to continue exploring great deals.'
-              : 'Join now to unlock a personalized experience!'}
+              ? 'Sign in to continue exploring exclusive collections.'
+              : 'Join now to unlock a premium shopping experience!'}
           </p>
-          {/* <img
-            src="http://localhost:5173/src/assets/bright-vision.png"
-            alt="illustration"
-            className="w-60 h-36 opacity-90"
-          /> */}
+          {/* Optional illustration */}
+        <img src={assets.logo} alt="Logo" className="h-10 max-w-[150px] object-contain" />
         </div>
 
         {/* Right Side - Form */}
@@ -63,6 +60,7 @@ const Login = () => {
           <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
             {state === 'login' ? 'Sign In' : 'Register'}
           </h3>
+
           <form onSubmit={onSubmitHandler} className="space-y-5">
             {state === 'register' && (
               <div>
@@ -75,11 +73,12 @@ const Login = () => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full mt-1 px-4 py-2 border border-[#b30000]/50 rounded-md focus:ring-[#800000] focus:border-[#800000] outline-none transition"
                   placeholder="John Doe"
                 />
               </div>
             )}
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-600">
                 Email Address
@@ -90,10 +89,11 @@ const Login = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full mt-1 px-4 py-2 border border-[#b30000]/50 rounded-md focus:ring-[#800000] focus:border-[#800000] outline-none transition"
                 placeholder="you@example.com"
               />
             </div>
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-600">
                 Password
@@ -104,22 +104,24 @@ const Login = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full mt-1 px-4 py-2 border border-[#b30000]/50 rounded-md focus:ring-[#800000] focus:border-[#800000] outline-none transition"
                 placeholder="••••••••"
               />
             </div>
+
             <button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg shadow-md transition"
+              className="w-full bg-[#800000] hover:bg-[#b30000] text-white font-semibold py-2.5 rounded-lg shadow-md transition"
             >
               {state === 'login' ? 'Sign In' : 'Register'}
             </button>
           </form>
+
           <p className="mt-5 text-center text-sm text-gray-500">
             {state === 'login' ? 'Don’t have an account?' : 'Already have an account?'}{' '}
             <button
               onClick={() => setState(state === 'login' ? 'register' : 'login')}
-              className="text-indigo-600 hover:underline font-medium"
+              className="text-[#800000] hover:underline font-medium"
             >
               {state === 'login' ? 'Register' : 'Sign in'}
             </button>

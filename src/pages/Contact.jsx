@@ -165,7 +165,7 @@ const Contact = () => {
       </div>
 
       {/* Google Map */}
-      <div className="mt-12 rounded-lg overflow-hidden shadow-lg">
+      {/* <div className="mt-12 rounded-lg overflow-hidden shadow-lg">
         <iframe
           title="JD PrimeHub Showroom"
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3769.367743944027!2d72.83281617515108!3d19.13442505060265!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b6440cb48c4b%3A0xe640f888be3f6978!2sFour%20Bungalows%2C%20Andheri%20West%2C%20Mumbai%2C%20Maharashtra%20400053!5e0!3m2!1sen!2sin!4v1716987123456!5m2!1sen!2sin"
@@ -176,7 +176,7 @@ const Contact = () => {
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
         />
-      </div>
+      </div> */}
     </div>
   );
 };

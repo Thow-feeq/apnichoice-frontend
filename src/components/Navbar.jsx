@@ -40,7 +40,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-pink-50 via-white to-pink-50 border-b border-gray-200 shadow-lg">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-lg">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
 
           {/* Textile Pattern Background Overlay */}
@@ -57,7 +57,7 @@ const Navbar = () => {
                 type="text"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search fabrics & products"
-                className="w-full border border-gray-300 rounded-full pl-9 pr-3 py-2 text-sm outline-none focus:ring-2 focus:ring-pink-400 bg-white/90 backdrop-blur-sm"
+                className="w-full border border-gray-300 rounded-full pl-9 pr-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#800000] bg-white/90 backdrop-blur-sm"
               />
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             </div>
@@ -65,8 +65,8 @@ const Navbar = () => {
             <div className="flex items-center space-x-3">
               <div onClick={() => navigate('/cart')} className="relative cursor-pointer text-center">
                 <img src={assets.nav_cart_icon} alt="Cart" className="w-6 mx-auto" />
-                <span className="text-xs text-gray-600">Cart</span>
-                <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                <span className="text-xs text-[#800000]">Cart</span>
+                <span className="absolute -top-2 -right-2 bg-[#800000] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                   {getCartCount()}
                 </span>
               </div>
@@ -79,7 +79,7 @@ const Navbar = () => {
                 }}
               >
                 <img src={assets.user_icon} alt="User" className="w-6 mx-auto" />
-                <span className="text-xs text-gray-600">{user ? user.name : 'Login'}</span>
+                <span className="text-xs text-[#800000]">{user ? user.name : 'Login'}</span>
 
                 {user && showMobileMenu && (
                   <ul className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow z-50 text-sm">
@@ -88,13 +88,13 @@ const Navbar = () => {
                         navigate('/my-orders');
                         setShowMobileMenu(false);
                       }}
-                      className="px-4 py-2 hover:bg-pink-100 cursor-pointer"
+                      className="px-4 py-2 hover:bg-[#800000]/10 cursor-pointer"
                     >
                       My Orders
                     </li>
                     <li
                       onClick={logout}
-                      className="px-4 py-2 hover:bg-pink-100 cursor-pointer"
+                      className="px-4 py-2 hover:bg-[#800000]/10 cursor-pointer"
                     >
                       Logout
                     </li>
@@ -111,15 +111,15 @@ const Navbar = () => {
           {/* DESKTOP */}
           <div className="hidden sm:flex items-center justify-between w-full relative z-10">
             <NavLink to="/" className="flex-shrink-0 mr-6">
-              {/* <img src={assets.logo} alt="Logo" className="h-14 object-contain" /> */}
+              <img src={assets.logo} alt="Logo" className="h-14 object-contain" />
             </NavLink>
 
-            <div className="flex items-center space-x-6 font-medium text-gray-700">
-              <NavLink to="/" className="text-sm hover:text-pink-500 transition">Home</NavLink>
-              <NavLink to="/products" className="text-sm hover:text-pink-500 transition">Products</NavLink>
-              <NavLink to="/contact" className="text-sm hover:text-pink-500 transition">Contact</NavLink>
+            <div className="flex items-center space-x-6 font-medium text-[#800000]">
+              <NavLink to="/" className="text-sm hover:text-[#800000]/80 transition">Home</NavLink>
+              <NavLink to="/products" className="text-sm hover:text-[#800000]/80 transition">Products</NavLink>
+              <NavLink to="/contact" className="text-sm hover:text-[#800000]/80 transition">Contact</NavLink>
               <div
-                className="cursor-pointer text-sm hover:text-pink-500 transition"
+                className="cursor-pointer text-sm hover:text-[#800000]/80 transition"
                 onClick={() => setShowLocationPrompt(true)}
               >
                 {location || "↓ Location"}
@@ -132,15 +132,15 @@ const Navbar = () => {
                   type="text"
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search fabrics & patterns"
-                  className="w-full border border-gray-300 rounded-full pl-10 pr-4 py-2 text-sm outline-none focus:ring-2 focus:ring-pink-400 bg-white/90 backdrop-blur-sm"
+                  className="w-full border border-gray-300 rounded-full pl-10 pr-4 py-2 text-sm outline-none focus:ring-2 focus:ring-[#800000] bg-white/90 backdrop-blur-sm"
                 />
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               </div>
 
               <div onClick={() => navigate('/cart')} className="relative cursor-pointer text-center">
                 <img src={assets.nav_cart_icon} alt="Cart" className="w-6 mx-auto" />
-                <span className="text-xs text-gray-600">Cart</span>
-                <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                <span className="text-xs text-[#800000]">Cart</span>
+                <span className="absolute -top-2 -right-2 bg-[#800000] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                   {getCartCount()}
                 </span>
               </div>
@@ -148,15 +148,15 @@ const Navbar = () => {
               {!user ? (
                 <div onClick={() => setShowUserLogin(true)} className="cursor-pointer text-center">
                   <img src={assets.user_icon} alt="User" className="w-8 mx-auto" />
-                  <span className="text-xs text-gray-600">Login</span>
+                  <span className="text-xs text-[#800000]">Login</span>
                 </div>
               ) : (
                 <div className="relative group cursor-pointer flex flex-col items-center text-center">
                   <img src={assets.user_icon} className="w-8 mx-auto" alt="User" />
-                  <span className="text-xs text-gray-600">{user.name}</span>
+                  <span className="text-xs text-[#800000]">{user.name}</span>
                   <ul className="hidden group-hover:block absolute top-10 right-0 bg-white shadow border rounded-md text-sm z-50">
-                    <li onClick={() => navigate("my-orders")} className="px-4 py-2 hover:bg-pink-100">My Orders</li>
-                    <li onClick={logout} className="px-4 py-2 hover:bg-pink-100">Logout</li>
+                    <li onClick={() => navigate("my-orders")} className="px-4 py-2 hover:bg-[#800000]/10">My Orders</li>
+                    <li onClick={logout} className="px-4 py-2 hover:bg-[#800000]/10">Logout</li>
                   </ul>
                 </div>
               )}
@@ -167,25 +167,25 @@ const Navbar = () => {
           {open && (
             <div className="sm:hidden mt-2 bg-white px-6 pb-4 pt-2 shadow-md space-y-3 relative z-10">
               {user && (
-                <div className="text-sm text-gray-600">
-                  Welcome, <span className="font-medium text-black">{user.name}</span>
+                <div className="text-sm text-[#800000]">
+                  Welcome, <span className="font-medium text-[#800000]">{user.name}</span>
                 </div>
               )}
-              <NavLink to="/" onClick={() => setOpen(false)} className="block text-gray-700 hover:text-pink-500">Home</NavLink>
-              <NavLink to="/products" onClick={() => setOpen(false)} className="block text-gray-700 hover:text-pink-500">Products</NavLink>
-              {user && <NavLink to="/my-orders" onClick={() => setOpen(false)} className="block text-gray-700 hover:text-pink-500">My Orders</NavLink>}
-              <NavLink to="/contact" onClick={() => setOpen(false)} className="block text-gray-700 hover:text-pink-500">Contact</NavLink>
+              <NavLink to="/" onClick={() => setOpen(false)} className="block text-[#800000] hover:text-[#800000]/80">Home</NavLink>
+              <NavLink to="/products" onClick={() => setOpen(false)} className="block text-[#800000] hover:text-[#800000]/80">Products</NavLink>
+              {user && <NavLink to="/my-orders" onClick={() => setOpen(false)} className="block text-[#800000] hover:text-[#800000]/80">My Orders</NavLink>}
+              <NavLink to="/contact" onClick={() => setOpen(false)} className="block text-[#800000] hover:text-[#800000]/80">Contact</NavLink>
               {!user ? (
                 <button
                   onClick={() => { setOpen(false); setShowUserLogin(true); }}
-                  className="w-full bg-pink-500 hover:bg-pink-400 text-white px-4 py-2 rounded-full mt-2 text-sm"
+                  className="w-full bg-[#800000] hover:bg-[#660000] text-white px-4 py-2 rounded-full mt-2 text-sm"
                 >
                   Login
                 </button>
               ) : (
                 <button
                   onClick={logout}
-                  className="w-full bg-pink-500 hover:bg-pink-400 text-white px-4 py-2 rounded-full mt-2 text-sm"
+                  className="w-full bg-[#800000] hover:bg-[#660000] text-white px-4 py-2 rounded-full mt-2 text-sm"
                 >
                   Logout
                 </button>

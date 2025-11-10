@@ -10,13 +10,13 @@ const BottomBanner = () => {
       <div className="flex flex-col md:flex-row w-full overflow-hidden">
 
         {/* ✅ Left: Textile Features Carousel */}
-        <div className="w-full md:w-1/2 bg-gradient-to-br from-yellow-50 to-yellow-100 px-6 py-12 md:py-20 flex flex-col justify-center items-start">
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#fff0f0] to-[#ffe5e5] px-6 py-12 md:py-20 flex flex-col justify-center items-start">
           <div className="max-w-xl w-full">
-            <h2 className="text-3xl md:text-4xl font-bold text-rose-700 mb-4 text-left">
-              Why Choose Our Textiles?
+            <h2 className="text-3xl md:text-4xl font-bold text-[#800000] mb-4 text-left">
+              Why Choose Our Vastraa Dhee Fashions?
             </h2>
-            <p className="text-gray-700 mb-8 text-sm md:text-base leading-relaxed">
-              Discover the finest fabrics, sustainable craftsmanship, and timeless designs. Here’s what makes our textiles stand out:
+            <p className="text-[#4d0000] mb-8 text-sm md:text-base leading-relaxed">
+              Discover the finest fabrics, sustainable craftsmanship, and timeless designs. Here’s what makes our Vastraa Dhee Fashions stand out:
             </p>
 
             <Swiper
@@ -38,10 +38,10 @@ const BottomBanner = () => {
                       className="w-12 h-12 rounded-full object-cover"
                     />
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-800 mb-1">
+                      <h4 className="text-lg font-semibold text-[#800000] mb-1">
                         {feature.title}
                       </h4>
-                      <p className="text-sm text-gray-600">{feature.description}</p>
+                      <p className="text-sm text-[#4d0000]">{feature.description}</p>
                     </div>
                   </div>
                 </SwiperSlide>
@@ -49,7 +49,7 @@ const BottomBanner = () => {
             </Swiper>
 
             <div className="mt-8">
-              <button className="px-6 py-3 bg-rose-600 text-white font-medium rounded-full hover:bg-rose-500 transition shadow-md">
+              <button className="px-6 py-3 bg-[#800000] text-white font-medium rounded-full hover:bg-[#660000] transition shadow-md">
                 Explore Our Fabrics
               </button>
             </div>
@@ -74,13 +74,13 @@ const BottomBanner = () => {
             preserveAspectRatio="none"
           >
             <path
-              fill="#fff7f5"
+              fill="#fff5f5"
               d="M0,224L80,192C160,160,320,96,480,96C640,96,800,160,960,181.3C1120,203,1280,181,1360,170.7L1440,160L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"
             />
           </svg>
 
           {/* Optional overlay text */}
-          <div className="absolute bottom-6 left-6 bg-rose-100/70 backdrop-blur-md px-4 py-2 rounded-md text-rose-800 font-semibold text-lg shadow-sm">
+          <div className="absolute bottom-6 left-6 bg-[#800000]/30 backdrop-blur-md px-4 py-2 rounded-md text-white font-semibold text-lg shadow-sm">
             Premium Handcrafted Fabrics
           </div>
         </div>

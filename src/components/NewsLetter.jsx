@@ -28,16 +28,16 @@ const NewsLetter = () => {
 
   return (
     <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 mt-24 px-6 sm:px-10 md:px-16 xl:px-24">
-      <div className="max-w-4xl mx-auto bg-gradient-to-r from-pink-50 to-white border border-gray-200 rounded-3xl shadow-xl p-8 md:p-12 text-center space-y-6 relative overflow-hidden">
+      <div className="max-w-4xl mx-auto bg-gradient-to-r from-[#f8f3ed] to-white border border-gray-200 rounded-3xl shadow-xl p-8 md:p-12 text-center space-y-6 relative overflow-hidden">
 
         {/* Optional: Textile Pattern Background */}
         <div className="absolute inset-0 bg-[url('/assets/textile_pattern.svg')] bg-contain bg-center bg-no-repeat opacity-10 pointer-events-none"></div>
 
-        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
-          Stay in Style with Our Textiles!
+        <h2 className="text-3xl md:text-4xl font-extrabold text-[#800000]">
+          Stay in Style with Our Vastraa Dhee Fashions!
         </h2>
 
-        <p className="text-gray-600 text-sm md:text-base max-w-2xl mx-auto">
+        <p className="text-[#4d0000] text-sm md:text-base max-w-2xl mx-auto">
           Subscribe to get the latest fabric collections, trending patterns, and exclusive offers delivered directly to your inbox.
         </p>
 
@@ -51,18 +51,18 @@ const NewsLetter = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email address"
-            className="w-full sm:w-[60%] px-5 py-3 border border-gray-300 rounded-full text-sm outline-none focus:ring-2 focus:ring-pink-400 transition shadow-sm"
+            className="w-full sm:w-[60%] px-5 py-3 border border-gray-300 rounded-full text-sm outline-none focus:ring-2 focus:ring-[#800000] transition shadow-sm"
           />
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 w-full sm:w-auto bg-gradient-to-r from-pink-500 to-pink-400 text-white font-semibold rounded-full hover:scale-105 transition transform shadow-lg"
+            className="px-6 py-3 w-full sm:w-auto bg-gradient-to-r from-[#800000] to-[#b30000] text-white font-semibold rounded-full hover:scale-105 transition transform shadow-lg"
           >
             {loading ? 'Subscribing...' : 'Subscribe'}
           </button>
         </form>
 
-        <p className="text-xs text-gray-400 mt-2">
+        <p className="text-xs text-[#660000] mt-2">
           We respect your privacy. No spam ever. 🌿
         </p>
 

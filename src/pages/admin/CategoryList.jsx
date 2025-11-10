@@ -47,7 +47,7 @@ const CategoryList = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.put(`/api/seller/category/edit/${editCategory._id}`, editCategory);
+      const { data } = await axios.put(`/api/admin/category/edit/${editCategory._id}`, editCategory);
       if (data.success) {
         toast.success('Category updated successfully');
         setEditCategory(null);
@@ -63,7 +63,7 @@ const CategoryList = () => {
   const confirmDelete = async () => {
     setDeleting(true);
     try {
-      const { data } = await axios.delete(`/api/seller/category/delete/${deleteConfirm.category._id}`);
+      const { data } = await axios.delete(`/api/admin/category/delete/${deleteConfirm.category._id}`);
       if (data.success) {
         toast.success('Category deleted');
         fetchCategories();

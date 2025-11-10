@@ -53,22 +53,20 @@ const Categories = () => {
 
   const getImageUrl = (img) => {
     if (!img) return null;
-    // if already a full URL, return as-is
     if (img.startsWith('http')) return img;
-    // otherwise, prepend backend URL
     return `${API_URL}${img}`;
   };
 
-  if (loading) return <p>Loading categories...</p>;
+  if (loading) return <p className="text-[#800000]">Loading categories...</p>;
 
   return (
     <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 px-4 sm:px-6 lg:px-8 mt-16">
-      <h2 className="text-3xl font-semibold mb-8 text-black">Shop by Category</h2>
+      <h2 className="text-3xl font-semibold mb-8 text-[#800000]">Shop by Category</h2>
 
       <div className="relative">
         {/* Left Arrow */}
         <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-[#800000] text-white hover:bg-[#660000] w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
           onClick={() => scroll('left')}
           aria-label="Scroll Left"
         >
@@ -94,10 +92,10 @@ const Categories = () => {
               type="button"
               onClick={() => handleNavigate(path)}
               className="group relative flex-shrink-0 w-28 sm:w-32 flex flex-col items-center rounded-lg p-4 overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-xl"
-              style={{ backgroundColor: bgColor || '#f0f0f0' }}
+              style={{ backgroundColor: bgColor || '#fff5f5' }} // subtle light maroon tint
             >
               {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 z-0 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-pink-500 transition-opacity duration-500 opacity-0 group-hover:opacity-20 rounded-lg" />
+              <div className="absolute inset-0 z-0 group-hover:bg-gradient-to-r group-hover:from-[#800000] group-hover:to-[#660000] transition-opacity duration-500 opacity-0 group-hover:opacity-20 rounded-lg" />
 
               {image ? (
                 <img
@@ -109,19 +107,19 @@ const Categories = () => {
                   onError={(e) => { e.target.style.display = 'none'; }}
                 />
               ) : (
-                <div className="relative z-10 w-20 h-20 bg-gray-200 flex items-center justify-center rounded mb-2">
+                <div className="relative z-10 w-20 h-20 bg-[#f0e5e5] flex items-center justify-center rounded mb-2 text-[#800000] text-xs">
                   No Image
                 </div>
               )}
 
-              <span className="relative z-10 text-sm font-medium text-gray-900">{text}</span>
+              <span className="relative z-10 text-sm font-medium text-[#800000]">{text}</span>
             </button>
           ))}
         </div>
 
         {/* Right Arrow */}
         <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#800000] text-white hover:bg-[#660000] w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
           onClick={() => scroll('right')}
           aria-label="Scroll Right"
         >

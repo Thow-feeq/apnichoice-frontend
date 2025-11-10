@@ -1,4 +1,4 @@
-import logo from "./bright-vision.png";
+import logo from "./logo.png";
 import search_icon from "./search_icon.svg";
 import remove_icon from "./remove_icon.svg";
 import arrow_right_icon_colored from "./arrow_right_icon_colored.svg";
@@ -188,11 +188,6 @@ export const features = [
     icon: delivery_truck_icon,
     title: "Delivery On Time",
     description: "4 hours Delivery in any part of chennai.",
-  },
-  {
-    icon: leaf_icon,
-    title: "Lens Guaranteed",
-    description: "Lens specks bluekart straight from the source.",
   },
   {
     icon: coin_icon,

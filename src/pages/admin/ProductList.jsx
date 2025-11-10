@@ -76,7 +76,7 @@ const ProductList = () => {
   };
 
   const handleEditProduct = (id) => {
-    navigate(`/seller/edit-product/${id}`);
+    navigate(`/admin/edit-product/${id}`);
   };
 
   if (loading) {
@@ -98,7 +98,7 @@ const ProductList = () => {
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto">
       <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h2 className="text-2xl font-semibold text-gray-800">Textile Product Inventory</h2>
+        <h2 className="text-2xl font-semibold text-gray-800">Product Inventory</h2>
         <div className="relative w-full md:w-72">
           <HiOutlineSearch className="absolute left-3 top-2.5 text-gray-400 text-lg" />
           <input

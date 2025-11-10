@@ -52,9 +52,9 @@ const feedbacks = [
 
 const HappyCustomers = () => {
   return (
-    <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 bg-gradient-to-b from-pink-50 to-white py-16 px-4 sm:px-6 lg:px-8">
+    <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 bg-gradient-to-b from-[#f8f3ed] to-white py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-10">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-[#800000] mb-10">
           What Our Customers Say
         </h2>
 
@@ -74,17 +74,17 @@ const HappyCustomers = () => {
         >
           {feedbacks.map((feedback, index) => (
             <SwiperSlide key={index}>
-              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition p-6 flex flex-col h-full border-t-4 border-pink-500">
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition p-6 flex flex-col h-full border-t-4 border-[#800000] relative">
                 
                 {/* Customer Info */}
                 <div className="flex items-center gap-4 mb-4">
                   <img
                     src={feedback.icon}
                     alt={`${feedback.title} feedback`}
-                    className="w-14 h-14 rounded-full object-cover border-2 border-pink-500"
+                    className="w-14 h-14 rounded-full object-cover border-2 border-[#800000]"
                   />
                   <div className="text-left">
-                    <h3 className="text-lg font-semibold text-gray-800">{feedback.title}</h3>
+                    <h3 className="text-lg font-semibold text-[#4d0000]">{feedback.title}</h3>
                     <div className="text-yellow-400 text-sm mt-1">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <span key={i}>{i < feedback.rating ? '★' : '☆'}</span>
@@ -94,12 +94,12 @@ const HappyCustomers = () => {
                 </div>
 
                 {/* Feedback Text */}
-                <p className="text-gray-700 text-sm mt-auto leading-relaxed">
+                <p className="text-[#4d0000] text-sm mt-auto leading-relaxed">
                   {feedback.description}
                 </p>
 
                 {/* Optional textile tag */}
-                <span className="absolute top-3 right-3 bg-pink-500 text-white text-xs px-2 py-0.5 rounded-full shadow-md hidden group-hover:block">
+                <span className="absolute top-3 right-3 bg-[#800000] text-white text-xs px-2 py-0.5 rounded-full shadow-md hidden group-hover:block">
                   Textile Approved
                 </span>
               </div>

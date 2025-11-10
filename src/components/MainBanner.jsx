@@ -24,23 +24,23 @@ const MainBanner = () => {
     <>
       {/* Boutique / Reflections Theme */}
       <div
-        className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 
+        className="relative w-screen left-1/2 -translate-x-1/2 
         w-full h-[180px] sm:h-[220px] md:h-[500px] lg:h-[300px]
-        overflow-hidden mt-26 bg-[#f8f3ed]"
+        overflow-hidden mt-26 bg-white"
       >
 
         {/* Thin luxury top border */}
         <div className="absolute top-0 left-0 w-full h-[3px] 
-          bg-gradient-to-r from-[#d7c4a4] via-[#f2e6d7] to-[#d7c4a4] z-20" />
+          bg-gradient-to-r from-[#800000]/50 via-[#ffffff]/30 to-[#800000]/50 z-20" />
 
         {/* Feather gradient overlay */}
         <div className="absolute inset-0 
-          bg-gradient-to-b from-[#ffffff80] via-[#00000000] to-[#00000050] 
+          bg-gradient-to-b from-[#ffffff80] via-[#80000000] to-[#80000040] 
           z-10 pointer-events-none" />
 
         {/* Boutique soft vignette */}
         <div className="absolute inset-0 
-          bg-[radial-gradient(circle,transparent_50%,#00000015_100%)]
+          bg-[radial-gradient(circle,transparent_50%,#80000015_100%)]
           z-10 pointer-events-none" />
 
         {/* Swiper */}
@@ -68,7 +68,7 @@ const MainBanner = () => {
       {/* Reflections-style announcement bar */}
       <div
         className="relative w-screen left-1/2 -translate-x-1/2 
-        bg-[#3a2f2a] text-[#fceedd] h-10 leading-10 text-sm sm:text-base
+        bg-[#800000] text-white h-10 leading-10 text-sm sm:text-base
         overflow-hidden"
       >
         <div className="inline-block whitespace-nowrap animate-scroll-left">

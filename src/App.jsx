@@ -19,23 +19,23 @@ import Loading from './components/Loading';
 import Login from './components/Login';
 
 // Seller
-import SellerLogin from './components/seller/SellerLogin';
-import SellerLayout from './pages/seller/SellerLayout';
-import AddProduct from './pages/seller/AddProduct';
-import ProductList from './pages/seller/ProductList';
-import Orders from './pages/seller/Orders';
-import SellerCreateCoupon from './pages/seller/SellerCreateCoupon';
-import EditProduct from './pages/seller/EditProduct';
-import UserList from './pages/seller/UserList';
-import AdminDashboard from './pages/seller/AdminDashboard';
-import CouponList from './pages/seller/CouponList';
-import AddCategory from './pages/seller/AddCategory';
-import CategoryList from './pages/seller/CategoryList';
-import SubscriberList from './pages/seller/SubscriberList';
+import AdminLayout from './pages/admin/AdminLayout';
+import AddProduct from './pages/admin/AddProduct';
+import ProductList from './pages/admin/ProductList';
+import Orders from './pages/admin/Orders';
+import SellerCreateCoupon from './pages/admin/SellerCreateCoupon';
+import EditProduct from './pages/admin/EditProduct';
+import UserList from './pages/admin/UserList';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import CouponList from './pages/admin/CouponList';
+import AddCategory from './pages/admin/AddCategory';
+import CategoryList from './pages/admin/CategoryList';
+import SubscriberList from './pages/admin/SubscriberList';
+import AdminLogin from './components/admin/adminLogin';
 
 const App = () => {
   const location = useLocation();
-  const isSellerPath = location.pathname.includes("seller");
+  const isSellerPath = location.pathname.includes("admin");
   const { showUserLogin, isSeller } = useAppContext();
 
   return (
@@ -60,8 +60,8 @@ const App = () => {
           <Route path='/login' element={<Login />} />
 
           {/* Seller Routes */}
-          <Route path='/seller' element={isSeller ? <SellerLayout /> : <SellerLogin />}>
-            <Route index element={<AddProduct />} />
+          <Route path='/admin' element={isSeller ? <AdminLayout /> : <AdminLogin />}>
+            <Route path='add-product' index element={<AddProduct />} />
             <Route path='product-list' element={<ProductList />} />
             <Route path='category-list' element={<CategoryList />} />
             <Route path='add-category' element={<AddCategory />} />
@@ -71,7 +71,7 @@ const App = () => {
             <Route path='userList' element={<UserList />} />
             <Route path='subscriberList' element={<SubscriberList />} />
             <Route path='coupons' element={<CouponList />} />
-            <Route path='login' element={<SellerLogin />} />
+            <Route path='login' element={<AdminLogin />} />
             <Route path='dashboard' element={<AdminDashboard />} />
           </Route>
         </Routes>

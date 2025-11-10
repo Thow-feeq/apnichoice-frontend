@@ -5,29 +5,29 @@ import toast from "react-hot-toast";
 import { useState } from "react";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
 
-const SellerLayout = () => {
+const AdminLayout = () => {
   const { axios, navigate } = useAppContext();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const sidebarLinks = [
-    { name: "Dashboard", path: "/seller/dashboard", icon: assets.dashboard_icon },
-    { name: "Add Product", path: "/seller", icon: assets.add_icon },
-    { name: "Product List", path: "/seller/product-list", icon: assets.product_list_icon },
-    { name: "Add Category", path: "/seller/add-category", icon: assets.add_icon },
-    { name: "Category List", path: "/seller/category-list", icon: assets.product_list_icon },
-    { name: "Orders", path: "/seller/orders", icon: assets.order_icon },
-    { name: "Create Coupon", path: "/seller/create-coupon", icon: assets.create_coupon },
-    { name: "User Lists", path: "/seller/UserList", icon: assets.user_list },
-    { name: "Coupon List", path: "/seller/coupons", icon: assets.coupon_list },
-    { name: "Subscriber List", path: "/seller/subscriberList", icon: assets.subscriber_list }
+    { name: "Dashboard", path: "/admin/dashboard", icon: assets.dashboard_icon },
+    { name: "Add Product", path: "/admin/add-product", icon: assets.add_icon },
+    { name: "Product List", path: "/admin/product-list", icon: assets.product_list_icon },
+    { name: "Add Category", path: "/admin/add-category", icon: assets.add_icon },
+    { name: "Category List", path: "/admin/category-list", icon: assets.product_list_icon },
+    { name: "Orders", path: "/admin/orders", icon: assets.order_icon },
+    { name: "Create Coupon", path: "/admin/create-coupon", icon: assets.create_coupon },
+    { name: "User Lists", path: "/admin/UserList", icon: assets.user_list },
+    { name: "Coupon List", path: "/admin/coupons", icon: assets.coupon_list },
+    { name: "Subscriber List", path: "/admin/subscriberList", icon: assets.subscriber_list }
   ];
 
   const logout = async () => {
     try {
-      const { data } = await axios.get('/api/seller/logout');
+      const { data } = await axios.get('/api/admin/logout');
       if (data.success) {
         toast.success(data.message);
-        navigate('/seller');
+        navigate('/admin');
       } else {
         toast.error(data.message);
       }
@@ -102,4 +102,4 @@ const SellerLayout = () => {
   );
 };
 
-export default SellerLayout;
+export default AdminLayout;

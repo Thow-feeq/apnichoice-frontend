@@ -17,7 +17,7 @@ const Home = () => {
       <ScrollFadeIn delay={0.1}><Categories /></ScrollFadeIn>
       <ScrollFadeIn delay={0.2}><BestSeller /></ScrollFadeIn>
       <ScrollFadeIn delay={0.3}><MiddleBanner /></ScrollFadeIn>
-      <ScrollFadeIn delay={0.4}><OpticsVideo /></ScrollFadeIn>
+      {/* <ScrollFadeIn delay={0.4}><OpticsVideo /></ScrollFadeIn> */}
       <ScrollFadeIn delay={0.5}><BottomBanner /></ScrollFadeIn>
       <ScrollFadeIn delay={0.6}><ShopByCategory /></ScrollFadeIn>
       <ScrollFadeIn delay={0.6}><HappyCustomers /></ScrollFadeIn>

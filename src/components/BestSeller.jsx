@@ -27,12 +27,12 @@ const BestSeller = () => {
   return (
     <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 mt-12 sm:mt-16 max-w-screen-2xl mx-auto px-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900">
-         Best Seller
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#800000]">
+          Best Seller
         </h2>
         <button
           onClick={() => navigate('/products/mobile-temper-glass')}
-          className="text-sm text-green-600 hover:text-green-800 font-medium"
+          className="text-sm text-[#800000] hover:text-[#660000] font-medium"
         >
           See All →
         </button>
@@ -43,7 +43,7 @@ const BestSeller = () => {
           {/* Left Scroll Button */}
           <button
             onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full p-2 z-10 hidden sm:block"
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#800000] hover:bg-[#660000] text-white shadow-md rounded-full p-2 z-10 hidden sm:block"
           >
             ◀
           </button>
@@ -66,13 +66,13 @@ const BestSeller = () => {
           {/* Right Scroll Button */}
           <button
             onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white shadow-md rounded-full p-2 z-10 hidden sm:block"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#800000] hover:bg-[#660000] text-white shadow-md rounded-full p-2 z-10 hidden sm:block"
           >
             ▶
           </button>
         </div>
       ) : (
-        <p className="mt-8 text-center text-gray-600 text-lg">
+        <p className="mt-8 text-center text-[#800000] text-lg">
           No best seller products available at the moment.
         </p>
       )}
