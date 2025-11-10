@@ -5,6 +5,7 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.withCredentials = true; // if you use cookies
 axios.defaults.timeout = 15000; // Increased timeout
 
 export const AppContext = createContext();
