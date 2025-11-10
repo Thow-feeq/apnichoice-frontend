@@ -4,49 +4,58 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 
+// Textile banner images
 const bannerImages = [
-  assets.bottom_banner_image,
-  assets.banner_image,
-  assets.optical_store,
+  assets.textile_one,
+  assets.textile_two,
+  assets.textile_three,
 ];
 
+// Textile categories
 const categories = [
   {
-    title: 'Temper Glass',
-    image: assets.galaxy_sam,
-    url: '/products/mobile-temper-glass',
+    title: 'Menswear',
+    image: assets.menswear_one,
+    url: '/products/menswear',
+    badge: 'New',
   },
   {
-    title: 'Ear Buds',
-    image: assets.noice,
-    url: '/products/ear-phone',
+    title: 'Womenswear',
+    image: assets.womenswear_one,
+    url: '/products/womenswear',
+    badge: 'Trending',
   },
   {
-    title: 'Bluetooth Speaker',
-    image: assets.blutooth_speaker_cat_1,
-    url: '/products/bluetooth-speaker',
+    title: 'Kidswear',
+    image: assets.kidswear_one,
+    url: '/products/kidswear',
+    badge: 'Hot',
   },
   {
-    title: 'Flip Case',
-    image: assets.Flip_case_cat_1,
-    url: '/products/flip-case',
+    title: 'Ethnic Wear',
+    image: assets.ethnicwear_one,
+    url: '/products/ethnic-wear',
+    badge: 'New',
   },
 ];
 
 const MiddleBanner = () => {
   return (
-    <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 mt-24 w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 mt-24 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row gap-8">
 
-        {/* ✅ Left: Clickable Banner Carousel */}
-        <a href="https://mobistorm.in/" target="_blank" rel="noopener noreferrer" className="w-full md:w-1/2 h-80 md:h-auto rounded-lg overflow-hidden shadow-md block">
+        {/* ✅ Left: Textile Banner Carousel */}
+        <a
+          href="/products"
+          className="w-full md:w-1/2 h-80 md:h-auto rounded-lg overflow-hidden shadow-xl block relative group"
+        >
           <Swiper
             modules={[Autoplay]}
             spaceBetween={0}
             slidesPerView={1}
             loop={true}
             autoplay={{
-              delay: 3000,
+              delay: 4000,
               disableOnInteraction: false,
             }}
             className="h-full"
@@ -56,43 +65,50 @@ const MiddleBanner = () => {
                 <img
                   src={image}
                   alt={`Banner ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </SwiperSlide>
             ))}
           </Swiper>
+
+          {/* Optional overlay text */}
+          <div className="absolute bottom-4 left-6 bg-black/50 text-white px-4 py-2 rounded-md text-lg font-semibold">
+            Premium Textile Collection
+          </div>
         </a>
 
-        {/* ✅ Right: Shop by Category Section */}
+        {/* ✅ Right: Textile Categories */}
         <div className="w-full md:w-1/2 bg-gradient-to-br from-white to-gray-50 p-6 md:p-10 rounded-2xl shadow-xl border border-gray-100">
           <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center md:text-left">
-            Recently Viewed Categories
+            Explore Textile Categories
           </h2>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-6">
             {categories.map((cat, index) => (
               <a
                 key={index}
                 href={cat.url}
-                className="group relative bg-white rounded-xl shadow-md border border-gray-200 p-5 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary"
+                className="group relative bg-white rounded-xl shadow-md border border-gray-200 p-5 flex flex-col items-center text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-green-400"
               >
-                {/* Icon with glow ring */}
-                <div className="w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-gradient-to-tr from-blue-100 to-blue-200 group-hover:from-blue-200 group-hover:to-blue-300 transition">
+                {/* Glowing icon */}
+                <div className="w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-gradient-to-tr from-green-100 to-green-200 group-hover:from-green-200 group-hover:to-green-300 transition">
                   <img
                     src={cat.image}
                     alt={cat.title}
-                    className="w-8 h-8 object-contain"
+                    className="w-10 h-10 object-contain"
                   />
                 </div>
 
-                <span className="text-gray-800 font-semibold text-base group-hover:text-primary transition">
+                <span className="text-gray-800 font-semibold text-base group-hover:text-green-700 transition">
                   {cat.title}
                 </span>
 
-                {/* Optional: Badge or label */}
-                <span className="absolute top-2 right-2 text-xs bg-primary text-white px-2 py-0.5 rounded-full shadow-sm hidden group-hover:block">
-                  View
-                </span>
+                {/* Badge */}
+                {cat.badge && (
+                  <span className="absolute top-2 right-2 text-xs bg-green-600 text-white px-2 py-0.5 rounded-full shadow-sm">
+                    {cat.badge}
+                  </span>
+                )}
               </a>
             ))}
           </div>

@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 
+const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+
 const Categories = () => {
   const { navigate, axios } = useAppContext();
   const [categories, setCategories] = useState([]);
@@ -10,12 +12,9 @@ const Categories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const token = localStorage.getItem('token'); // adjust key if needed
-
+        const token = localStorage.getItem('token');
         const { data } = await axios.get('/api/seller/category/list', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (data.success) {
@@ -32,7 +31,6 @@ const Categories = () => {
 
     fetchCategories();
   }, [axios]);
-
 
   const handleNavigate = useCallback(
     (path) => {
@@ -53,19 +51,24 @@ const Categories = () => {
     }
   };
 
+  const getImageUrl = (img) => {
+    if (!img) return null;
+    // if already a full URL, return as-is
+    if (img.startsWith('http')) return img;
+    // otherwise, prepend backend URL
+    return `${API_URL}${img}`;
+  };
+
   if (loading) return <p>Loading categories...</p>;
 
   return (
     <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 px-4 sm:px-6 lg:px-8 mt-16">
-      <h2 className="text-3xl font-semibold mb-8 text-black">Shop by Category </h2>
+      <h2 className="text-3xl font-semibold mb-8 text-black">Shop by Category</h2>
 
       <div className="relative">
         {/* Left Arrow */}
         <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 
-                     bg-black text-white hover:bg-gray-800 
-                     w-10 h-10 flex items-center justify-center 
-                     rounded-full shadow transition duration-300"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
           onClick={() => scroll('left')}
           aria-label="Scroll Left"
         >
@@ -98,17 +101,19 @@ const Categories = () => {
 
               {image ? (
                 <img
-                  src={`http://localhost:4000${image}`}
+                  src={getImageUrl(image)}
                   alt={text}
                   className="relative z-10 w-20 h-20 object-contain mb-2 transition-transform duration-300 group-hover:scale-110"
                   loading="lazy"
                   draggable={false}
+                  onError={(e) => { e.target.style.display = 'none'; }}
                 />
               ) : (
                 <div className="relative z-10 w-20 h-20 bg-gray-200 flex items-center justify-center rounded mb-2">
                   No Image
                 </div>
               )}
+
               <span className="relative z-10 text-sm font-medium text-gray-900">{text}</span>
             </button>
           ))}
@@ -116,10 +121,7 @@ const Categories = () => {
 
         {/* Right Arrow */}
         <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 
-                     bg-black text-white hover:bg-gray-800 
-                     w-10 h-10 flex items-center justify-center 
-                     rounded-full shadow transition duration-300"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black text-white hover:bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
           onClick={() => scroll('right')}
           aria-label="Scroll Right"
         >

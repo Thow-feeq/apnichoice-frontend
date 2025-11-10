@@ -5,39 +5,56 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 15000; // Increased timeout
 
 export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
-  const currency = import.meta.env.VITE_CURRENCY;
   const navigate = useNavigate();
+  const currency = import.meta.env.VITE_CURRENCY;
 
   const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
   });
-
   const [isSeller, setIsSeller] = useState(false);
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState(() => {
-    const storedCart = localStorage.getItem("cartItems");
-    return storedCart ? JSON.parse(storedCart) : {};
+    const saved = localStorage.getItem("cartItems");
+    return saved ? JSON.parse(saved) : {};
   });
   const [searchQuery, setSearchQuery] = useState("");
 
+  // -----------------------
+  // Token & Auth Handling
+  // -----------------------
+  const setAuthToken = (token) => {
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      localStorage.setItem("token", token);
+    } else {
+      delete axios.defaults.headers.common["Authorization"];
+      localStorage.removeItem("token");
+    }
+  };
+
   const logoutUser = () => {
-    console.log("🔴 Logging out user (clearing localStorage)");
+    console.log("🔴 Logging out user");
     setUser(null);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    setIsSeller(false);
     setCartItems({});
+    localStorage.removeItem("user");
     localStorage.removeItem("cartItems");
-    delete axios.defaults.headers.common["Authorization"];
+    setAuthToken(null);
   };
 
   const fetchUser = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return logoutUser();
+
+    setAuthToken(token);
+
     try {
       const { data } = await axios.get("/api/user/is-auth");
       if (data.success) {
@@ -45,13 +62,12 @@ export const AppContextProvider = ({ children }) => {
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
         setCartItems(data.user.cartItems || {});
-        localStorage.setItem("cartItems", JSON.stringify(data.user.cartItems || {}));
       } else {
-        console.log("⚠️ is-auth failed:", data.message);
+        console.warn("⚠️ User not authenticated:", data.message);
         logoutUser();
       }
     } catch (err) {
-      console.log("❌ fetchUser error:", err.message);
+      console.error("❌ fetchUser error:", err.message);
       logoutUser();
     }
   };
@@ -65,128 +81,118 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
+  // -----------------------
+  // Products
+  // -----------------------
   const fetchProducts = async (retries = 3, delay = 1000) => {
     try {
       const { data } = await axios.get("/api/product/list");
-      if (data.success) {
-        setProducts(data.products);
-      } else {
-        toast.error(data.message);
-      }
+      if (data.success) setProducts(data.products);
+      else toast.error(data.message);
     } catch (error) {
-      console.error("List Products Error:", error);
-      if (error.code === "ECONNRESET" && retries > 0) {
-        toast.error("Connection reset. Retrying...");
+      console.error("Fetch products error:", error.message);
+      if (retries > 0) {
+        console.log(`Retrying in ${delay}ms... (${retries} attempts left)`);
         setTimeout(() => fetchProducts(retries - 1, delay * 2), delay);
       } else {
-        toast.error(error.message || "Failed to fetch products");
+        toast.error("Failed to fetch products. Check your connection.");
       }
     }
   };
 
-  const addToCart = (itemId) => {
-    const cartData = { ...cartItems };
-    cartData[itemId] = (cartData[itemId] || 0) + 1;
-    setCartItems(cartData);
-    localStorage.setItem("cartItems", JSON.stringify(cartData));
-    toast.success("Added to Cart");
+  // -----------------------
+  // Cart Operations
+  // -----------------------
+  const addToCart = (id) => {
+    const newCart = { ...cartItems, [id]: (cartItems[id] || 0) + 1 };
+    setCartItems(newCart);
+    localStorage.setItem("cartItems", JSON.stringify(newCart));
+    toast.success("Added to cart");
   };
 
-  const updateCartItem = (itemId, quantity) => {
-    const cartData = { ...cartItems, [itemId]: quantity };
-    setCartItems(cartData);
-    localStorage.setItem("cartItems", JSON.stringify(cartData));
-    toast.success("Cart Updated");
+  const updateCartItem = (id, qty) => {
+    const newCart = { ...cartItems, [id]: qty };
+    setCartItems(newCart);
+    localStorage.setItem("cartItems", JSON.stringify(newCart));
   };
 
-  const removeFromCart = (itemId) => {
-    const cartData = { ...cartItems };
-    if (cartData[itemId]) {
-      cartData[itemId] -= 1;
-      if (cartData[itemId] <= 0) delete cartData[itemId];
-      setCartItems(cartData);
-      localStorage.setItem("cartItems", JSON.stringify(cartData));
-      toast.success("Removed from Cart");
+  const removeFromCart = (id) => {
+    const newCart = { ...cartItems };
+    if (newCart[id]) {
+      newCart[id] -= 1;
+      if (newCart[id] <= 0) delete newCart[id];
+      setCartItems(newCart);
+      localStorage.setItem("cartItems", JSON.stringify(newCart));
+      toast.success("Removed from cart");
     }
   };
 
-  const getCartCount = () => {
-    return Object.values(cartItems).reduce((a, b) => a + b, 0);
-  };
-
+  const getCartCount = () => Object.values(cartItems).reduce((a, b) => a + b, 0);
   const getCartAmount = () => {
-    let total = 0;
-    for (const itemId in cartItems) {
-      const product = products.find((p) => p._id === itemId);
-      if (product) total += product.offerPrice * cartItems[itemId];
-    }
-    return Math.floor(total * 100) / 100;
+    return Object.entries(cartItems).reduce((total, [id, qty]) => {
+      const prod = products.find((p) => p._id === id);
+      return prod ? total + prod.offerPrice * qty : total;
+    }, 0);
   };
 
+  // -----------------------
+  // Initialize
+  // -----------------------
   useEffect(() => {
-    const savedToken = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
+    if (token) setAuthToken(token);
 
-    console.log("📦 Loaded token from localStorage:", savedToken);
-
-    if (savedToken) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${savedToken}`;
-      console.log("🔐 Authorization header set in axios");
-    } else {
-      delete axios.defaults.headers.common["Authorization"];
-      console.log("🚫 Authorization header removed from axios");
-    }
-
-    // 🔁 Delay ensures header is set before fetchUser fires
-    setTimeout(() => {
-      fetchUser();
-      fetchSeller();
-      fetchProducts();
-    }, 0);
+    fetchUser();
+    fetchSeller();
+    fetchProducts();
   }, []);
 
+  // Sync cart with backend when user changes
   useEffect(() => {
+    if (!user) return;
     const updateCart = async () => {
       try {
-        const { data } = await axios.post("/api/cart/update", { cartItems });
-        if (!data.success) toast.error(data.message);
-      } catch (error) {
-        toast.error(error.message || "Failed to update cart");
+        await axios.post("/api/cart/update", { cartItems });
+      } catch (err) {
+        toast.error(err.message || "Failed to update cart");
       }
     };
-    if (user) updateCart();
-  }, [cartItems]);
+    updateCart();
+  }, [cartItems, user]);
 
-  const value = {
-    navigate,
-    user,
-    setUser: (user) => {
-      setUser(user);
-      if (user) localStorage.setItem("user", JSON.stringify(user));
-      else localStorage.removeItem("user");
-    },
-    isSeller,
-    setIsSeller,
-    showUserLogin,
-    setShowUserLogin,
-    products,
-    currency,
-    addToCart,
-    updateCartItem,
-    removeFromCart,
-    cartItems,
-    setCartItems: (cart) => {
-      setCartItems(cart);
-      localStorage.setItem("cartItems", JSON.stringify(cart));
-    },
-    searchQuery,
-    setSearchQuery,
-    getCartAmount,
-    getCartCount,
-    axios,
-    fetchProducts,
-  };
-
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider
+      value={{
+        navigate,
+        user,
+        setUser: (u) => {
+          setUser(u);
+          if (u) localStorage.setItem("user", JSON.stringify(u));
+          else localStorage.removeItem("user");
+        },
+        isSeller,
+        setIsSeller,
+        showUserLogin,
+        setShowUserLogin,
+        products,
+        currency,
+        addToCart,
+        updateCartItem,
+        removeFromCart,
+        cartItems,
+        setCartItems,
+        searchQuery,
+        setSearchQuery,
+        getCartAmount,
+        getCartCount,
+        fetchProducts,
+        axios,
+        logoutUser,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
 };
 
 export const useAppContext = () => useContext(AppContext);

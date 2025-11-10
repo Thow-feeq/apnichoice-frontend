@@ -15,7 +15,7 @@ const ProductList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
-  // Debounce logic using setTimeout
+  // Debounce for smoother search
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -98,12 +98,12 @@ const ProductList = () => {
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto">
       <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h2 className="text-2xl font-semibold text-gray-800">Product Inventory</h2>
+        <h2 className="text-2xl font-semibold text-gray-800">Textile Product Inventory</h2>
         <div className="relative w-full md:w-72">
           <HiOutlineSearch className="absolute left-3 top-2.5 text-gray-400 text-lg" />
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search fabrics..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -115,66 +115,128 @@ const ProductList = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-white border border-gray-200 rounded-xl shadow-md">
+      <div className="overflow-x-auto bg-white border border-gray-300 rounded-2xl shadow-lg">
         {products.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">No products found.</div>
+          <div className="p-6 text-center text-gray-500">No fabrics found.</div>
         ) : (
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-gray-50 sticky top-0 z-10">
-              <tr className="text-gray-600 uppercase text-xs">
-                <th className="px-6 py-4">Product</th>
-                <th className="px-6 py-4">Category</th>
+            <thead>
+              <tr className="bg-gray-100 text-gray-600 uppercase text-xs border-b">
+                <th className="px-6 py-4">Fabric</th>
+                <th className="px-6 py-4">Type</th>
+                <th className="px-6 py-4 hidden md:table-cell">Color</th>
+                <th className="px-6 py-4 hidden md:table-cell">Pattern</th>
                 <th className="px-6 py-4 hidden md:table-cell">Price</th>
                 <th className="px-6 py-4">Stock</th>
                 <th className="px-6 py-4">Actions</th>
               </tr>
             </thead>
+
             <tbody className="text-gray-700 divide-y divide-gray-100">
-              {products.map((product) => (
-                <tr key={product._id} className="hover:bg-gray-50 transition">
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <img
-                      src={product.image?.[0] || '/placeholder.png'}
-                      alt="Product"
-                      className="w-14 h-14 object-cover border rounded"
-                    />
-                    <span className="font-medium">{product.name}</span>
+              {products.map(fabric => (
+                <tr
+                  key={fabric._id}
+                  className="hover:bg-gray-50 transition-all duration-150"
+                >
+
+                  {/* Product Image + Name */}
+                  <td className="px-6 py-4 flex items-center gap-4">
+                    <div className="relative group">
+                      <img
+                        src={fabric.image?.[0] || "/placeholder.png"}
+                        alt="Fabric"
+                        className="w-14 h-14 object-cover border rounded-lg shadow-sm group-hover:scale-105 transition-transform"
+                      />
+                    </div>
+
+                    <div>
+                      <div className="font-medium text-gray-900">{fabric.name}</div>
+                      <div className="text-gray-500 text-xs">
+                        {fabric.variants?.length
+                          ? `${fabric.variants.length} variants`
+                          : "No variants"}
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 capitalize">{product.category}</td>
-                  <td className="px-6 py-4 hidden md:table-cell font-medium text-gray-800">
-                    {currency}
-                    {product.offerPrice}
+
+                  {/* Category */}
+                  <td className="px-6 py-4 capitalize">
+                    <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs shadow-sm">
+                      {fabric.category}
+                    </span>
                   </td>
+
+                  {/* First Color */}
+                  <td className="px-6 py-4 hidden md:table-cell">
+                    {fabric?.variants?.[0] ? (
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="w-4 h-4 rounded-full border shadow"
+                          style={{ backgroundColor: fabric.variants[0].colorCode }}
+                        ></span>
+                        {fabric.variants[0].colorName}
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+
+                  {/* Pattern */}
+                  <td className="px-6 py-4 hidden md:table-cell">
+                    {fabric?.variants?.[0]?.pattern ? (
+                      <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs shadow-sm">
+                        {fabric.variants[0].pattern}
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+
+                  {/* Price */}
+                  <td className="px-6 py-4 hidden md:table-cell font-semibold text-gray-800">
+                    <span className="inline-flex items-center">
+                      {currency}
+                      {fabric.offerPrice || fabric.price}
+                    </span>
+                  </td>
+
+                  {/* Stock Toggle */}
                   <td className="px-6 py-4">
                     <label className="inline-flex relative items-center cursor-pointer">
                       <input
                         type="checkbox"
                         className="sr-only peer"
-                        checked={product.inStock}
-                        onChange={() => toggleStock(product._id, !product.inStock)}
+                        checked={fabric.inStock}
+                        onChange={() => toggleStock(fabric._id, !fabric.inStock)}
                       />
-                      <div className="w-10 h-5 bg-gray-200 rounded-full peer-checked:bg-green-500 transition-colors" />
-                      <div className="absolute left-1 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 shadow" />
+                      <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors shadow-inner" />
+                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition-transform" />
                     </label>
                   </td>
+
+                  {/* Actions */}
                   <td className="px-6 py-4">
-                    <div className="flex items-center justify-start gap-3">
+                    <div className="flex items-center gap-3">
+
                       <button
-                        onClick={() => handleEditProduct(product._id)}
-                        className="flex items-center px-3 py-1.5 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 transition"
+                        onClick={() => handleEditProduct(fabric._id)}
+                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg shadow-sm transition flex items-center gap-1"
                       >
-                        <HiPencil className="mr-1 text-base" />
+                        <HiPencil className="text-base" />
                         <span className="hidden sm:inline">Edit</span>
                       </button>
+
                       <button
-                        onClick={() => deleteProduct(product._id)}
-                        className="flex items-center px-3 py-1.5 text-sm text-white bg-red-500 rounded hover:bg-red-600 transition"
+                        onClick={() => deleteProduct(fabric._id)}
+                        className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg shadow-sm transition flex items-center gap-1"
                       >
-                        <HiTrash className="mr-1 text-base" />
+                        <HiTrash className="text-base" />
                         <span className="hidden sm:inline">Delete</span>
                       </button>
+
                     </div>
                   </td>
+
                 </tr>
               ))}
             </tbody>

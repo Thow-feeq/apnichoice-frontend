@@ -3,6 +3,8 @@ import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 import { HiOutlineSearch } from 'react-icons/hi';
 
+const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+
 const CategoryList = () => {
   const { axios } = useAppContext();
   const [categories, setCategories] = useState([]);
@@ -97,6 +99,7 @@ const CategoryList = () => {
 
   return (
     <div className="p-6 w-full bg-white rounded-lg shadow-lg">
+      {/* Header & Search */}
       <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="text-3xl font-bold text-gray-900">Category List</h2>
         <div className="relative w-full md:w-80">
@@ -111,6 +114,7 @@ const CategoryList = () => {
         </div>
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto rounded-md border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200 table-auto">
           <thead className="bg-gray-50 sticky top-0 z-10">
@@ -132,10 +136,10 @@ const CategoryList = () => {
                 <tr key={cat._id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   <td className="px-6 py-4 text-center">
                     <img
-                      src={`http://localhost:4000${cat.image}`}
+                      src={`${API_URL}${cat.image}`}
                       alt={cat.text}
                       className="w-16 h-16 object-contain rounded-md mx-auto"
-                      onError={(e) => (e.target.style.display = 'none')}
+                      onError={(e) => { e.target.style.display = 'none'; }}
                     />
                   </td>
                   <td className="px-6 py-4 font-medium text-gray-900">{cat.text}</td>
@@ -173,6 +177,7 @@ const CategoryList = () => {
         </table>
       </div>
 
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center mt-6 gap-2">
           <button
@@ -186,8 +191,7 @@ const CategoryList = () => {
             <button
               key={idx}
               onClick={() => setCurrentPage(idx + 1)}
-              className={`px-3 py-1 rounded ${currentPage === idx + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'
-                }`}
+              className={`px-3 py-1 rounded ${currentPage === idx + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
             >
               {idx + 1}
             </button>
@@ -247,9 +251,10 @@ const CategoryList = () => {
               <div className="mb-4">
                 {editCategory.image && (
                   <img
-                    src={`http://localhost:4000${editCategory.image}`}
+                    src={`${API_URL}${editCategory.image}`}
                     alt="Preview"
                     className="w-24 h-24 object-contain border rounded mb-2"
+                    onError={(e) => { e.target.style.display = 'none'; }}
                   />
                 )}
               </div>

@@ -57,13 +57,32 @@ const Cart = () => {
 
   const getUserAddress = async () => {
     try {
-      const { data } = await axios.get('/api/address/get');
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Please login to view your addresses");
+        return navigate("/login");
+      }
+
+      const { data } = await axios.get('/api/address/get', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       if (data.success) {
         setAddresses(data.addresses);
         if (data.addresses.length > 0) setSelectedAddress(data.addresses[0]);
+      } else {
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      if (error.response && error.response.status === 401) {
+        toast.error("Session expired. Please login again.");
+        localStorage.removeItem("token");
+        navigate("/login");
+      } else {
+        toast.error(error.message || "Failed to fetch addresses");
+      }
     }
   };
 
@@ -73,17 +92,21 @@ const Cart = () => {
 
     const payload = {
       userId: user._id,
-      items: cartArray.map(item => ({
-        product: item._id,
-        quantity: item.quantity
-      })),
+      items: cartArray.map(item => ({ product: item._id, quantity: item.quantity })),
       address: selectedAddress._id,
       couponCode: couponCode || null,
     };
 
     try {
       setLoading(true);
-      const { data } = await axios.post(`/api/order/cod`, payload);
+
+      const token = localStorage.getItem("token"); // ensure token is sent
+      const { data } = await axios.post('/api/order/cod', payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       if (data.success) {
         toast.success(data.message);
         setCartItems({});
@@ -92,11 +115,18 @@ const Cart = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message || "Failed to place order");
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        localStorage.removeItem("token");
+        navigate("/login");
+      } else {
+        toast.error(error.message || "Failed to place order");
+      }
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     if (products.length > 0 && cartItems) getCart();
