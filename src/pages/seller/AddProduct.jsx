@@ -180,7 +180,7 @@ export default function AddProduct() {
   return (
     <div className="flex-1 h-[95vh] overflow-y-auto px-4 md:px-10 py-10">
       <form onSubmit={onSubmit} className="max-w-4xl mx-auto bg-white p-6 rounded-md shadow space-y-6">
-        <h2 className="text-2xl font-semibold text-gray-800">Add Textile Product — Meesho style</h2>
+        <h2 className="text-2xl font-semibold text-gray-800">Add Textile Product</h2>
 
         {/* basic details */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
