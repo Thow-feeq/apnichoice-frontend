@@ -1,75 +1,78 @@
-import React, { useEffect, useState } from 'react'
-import { useAppContext } from '../../context/AppContext'
+import React, { useEffect, useState } from 'react';
+import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 
 const AdminLogin = () => {
-    const { isSeller, setIsSeller, navigate, axios } = useAppContext();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+  const { isSeller, setIsSeller, navigate, axios } = useAppContext();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-    const onSubmitHandler = async (event) => {
-        try {
-            event.preventDefault();
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
+    try {
+      // Use AppContext axios instance (already has baseURL and credentials)
+      const { data } = await axios.post('/api/admin/login', { email, password });
 
-            const backendURL = 'https://apnichoice-backend.onrender.com'; // <-- your Express backend
-            const { data } = await axios.post(`${backendURL}/api/admin/login`, { email, password });
+      if (data.success) {
+        setIsSeller(true);
+        toast.success('Admin logged in successfully!');
+        navigate('/admin/dashboard');
+      } else {
+        toast.error(data.message || 'Invalid credentials');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message || 'Login failed');
+      console.error('Admin login error:', error);
+    }
+  };
 
-            if (data.success) {
-                setIsSeller(true);
-                navigate('/admin/dashboard');
-            } else {
-                toast.error(data.message);
-            }
+  useEffect(() => {
+    if (isSeller) navigate('/admin');
+  }, [isSeller]);
 
-        } catch (error) {
-            toast.error(error.response?.data?.message || error.message || "Login failed");
-        }
-    };
+  return !isSeller && (
+    <form
+      onSubmit={onSubmitHandler}
+      className="min-h-screen flex items-center text-sm text-gray-600"
+    >
+      <div className="flex flex-col gap-5 m-auto items-start p-8 py-12 min-w-80 sm:min-w-88 rounded-lg shadow-xl border border-gray-200">
+        <p className="text-2xl font-medium m-auto">
+          <span className="text-primary">Admin</span> Login
+        </p>
 
-    useEffect(() => {
-        if (isSeller) {
-            navigate("/admin");
-        }
-    }, [isSeller]);
+        <div className="w-full">
+          <p>Email</p>
+          <input
+            type="email"
+            placeholder="enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
+            required
+          />
+        </div>
 
-    return !isSeller && (
-        <form onSubmit={onSubmitHandler} className='min-h-screen flex items-center text-sm text-gray-600'>
-            <div className='flex flex-col gap-5 m-auto items-start p-8 py-12 min-w-80 sm:min-w-88 rounded-lg shadow-xl border border-gray-200'>
+        <div className="w-full">
+          <p>Password</p>
+          <input
+            type="password"
+            placeholder="enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
+            required
+          />
+        </div>
 
-                <p className='text-2xl font-medium m-auto'>
-                    <span className="text-primary">Admin</span> Login
-                </p>
-
-                <div className="w-full">
-                    <p>Email</p>
-                    <input
-                        onChange={(e) => setEmail(e.target.value)}
-                        value={email}
-                        type="email"
-                        placeholder="enter your email"
-                        className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
-                        required
-                    />
-                </div>
-
-                <div className="w-full">
-                    <p>Password</p>
-                    <input
-                        onChange={(e) => setPassword(e.target.value)}
-                        value={password}
-                        type="password"
-                        placeholder="enter your password"
-                        className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
-                        required
-                    />
-                </div>
-
-                <button className="bg-primary text-white w-full py-2 rounded-md cursor-pointer">
-                    Login
-                </button>
-            </div>
-        </form>
-    );
+        <button
+          type="submit"
+          className="bg-primary text-white w-full py-2 rounded-md cursor-pointer"
+        >
+          Login
+        </button>
+      </div>
+    </form>
+  );
 };
 
 export default AdminLogin;
