@@ -45,11 +45,11 @@ const SellerLayout = () => {
             {sidebarOpen ? <HiX /> : <HiMenuAlt3 />}
           </button>
           <Link to="/" className="flex items-center max-w-[120px]">
-            <img
+            {/* <img
               src={assets.logo}
               alt="Logo"
               className="max-w-[120px] w-full h-auto object-contain"
-            />
+            /> */}
           </Link>
         </div>
         <div className="flex items-center gap-4 text-gray-700">

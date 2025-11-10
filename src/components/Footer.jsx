@@ -24,7 +24,7 @@ const Footer = () => {
           
           {/* Logo and About */}
           <div className="max-w-sm">
-            <img className="w-32 md:w-36" src={assets.logo} alt="logo" />
+            {/* <img className="w-32 md:w-36" src={assets.logo} alt="logo" /> */}
             <p className="mt-6 text-gray-200 text-sm md:text-base leading-relaxed">
               Discover premium textiles, fabrics, and fashion accessories delivered to your doorstep. Trusted by thousands of designers and hobbyists alike, we make shopping effortless and inspiring.
             </p>

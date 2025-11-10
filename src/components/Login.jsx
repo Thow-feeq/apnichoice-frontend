@@ -51,11 +51,11 @@ const Login = () => {
               ? 'Sign in to continue exploring great deals.'
               : 'Join now to unlock a personalized experience!'}
           </p>
-          <img
+          {/* <img
             src="http://localhost:5173/src/assets/bright-vision.png"
             alt="illustration"
             className="w-60 h-36 opacity-90"
-          />
+          /> */}
         </div>
 
         {/* Right Side - Form */}

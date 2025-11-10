@@ -111,7 +111,7 @@ const Navbar = () => {
           {/* DESKTOP */}
           <div className="hidden sm:flex items-center justify-between w-full relative z-10">
             <NavLink to="/" className="flex-shrink-0 mr-6">
-              <img src={assets.logo} alt="Logo" className="h-14 object-contain" />
+              {/* <img src={assets.logo} alt="Logo" className="h-14 object-contain" /> */}
             </NavLink>
 
             <div className="flex items-center space-x-6 font-medium text-gray-700">
