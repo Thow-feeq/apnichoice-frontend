@@ -1,31 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import toast from 'react-hot-toast';
-import { HiOutlineSearch } from 'react-icons/hi';
+import React, { useEffect, useMemo, useState } from "react";
+import { useAppContext } from "../../context/AppContext";
+import { HiOutlineSearch } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 
 const CategoryList = () => {
   const { axios } = useAppContext();
+  const navigate = useNavigate();
+
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [editCategory, setEditCategory] = useState(null);
-  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, category: null });
-  const [deleting, setDeleting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
+  // ✅ FETCH
   const fetchCategories = async () => {
     try {
-      const { data } = await axios.get('/api/seller/category/list');
+      const { data } = await axios.get("/api/seller/category/list");
       if (data.success) {
         setCategories(data.categories);
-      } else {
-        toast.error(data.message || 'Failed to load categories');
       }
-    } catch (error) {
-      toast.error('Error loading category list');
+    } catch (err) {
+      toast.error("Failed to load categories");
     } finally {
       setLoading(false);
     }
@@ -33,280 +30,194 @@ const CategoryList = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, [axios]);
+  }, []);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
+  // ✅ DELETE
+  const handleDelete = async (id) => {
+    if (!confirm("Delete this category?")) return;
 
-  const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    setEditCategory((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
     try {
-      const { data } = await axios.put(`/api/admin/category/edit/${editCategory._id}`, editCategory);
+      const { data } = await axios.delete(`/api/seller/category/${id}`);
       if (data.success) {
-        toast.success('Category updated successfully');
-        setEditCategory(null);
+        toast.success("Category deleted");
         fetchCategories();
       } else {
-        toast.error(data.message || 'Update failed');
+        toast.error(data.message || "Delete failed");
       }
-    } catch (error) {
-      toast.error('Error updating category');
+    } catch (err) {
+      toast.error("Delete error");
     }
   };
 
-  const confirmDelete = async () => {
-    setDeleting(true);
-    try {
-      const { data } = await axios.delete(`/api/admin/category/delete/${deleteConfirm.category._id}`);
-      if (data.success) {
-        toast.success('Category deleted');
-        fetchCategories();
+  // ✅ BUILD TREE
+  const categoryTree = useMemo(() => {
+    const map = {};
+    const roots = [];
+
+    categories.forEach((cat) => {
+      map[cat._id] = { ...cat, children: [] };
+    });
+
+    categories.forEach((cat) => {
+      if (cat.parent) {
+        map[cat.parent]?.children.push(map[cat._id]);
       } else {
-        toast.error(data.message || 'Delete failed');
+        roots.push(map[cat._id]);
       }
-    } catch (error) {
-      toast.error('Error deleting category');
-    } finally {
-      setDeleting(false);
-      setDeleteConfirm({ show: false, category: null });
-    }
+    });
+
+    return roots;
+  }, [categories]);
+
+  // ✅ SEARCH
+  const filterTree = (nodes) =>
+    nodes
+      .filter((n) =>
+        (n.text?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+        (n.path?.toLowerCase() || "").includes(searchTerm.toLowerCase())
+      )
+      .map((n) => ({
+        ...n,
+        children: n.children ? filterTree(n.children) : [],
+      }));
+
+  const filteredTree = filterTree(categoryTree);
+
+  // ✅ LEVEL BADGE
+  const levelBadge = (level) => {
+    if (level === 0) return "bg-green-600";
+    if (level === 1) return "bg-blue-600";
+    return "bg-purple-600";
   };
 
-  const filteredCategories = categories.filter((cat) =>
-    cat.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cat.path.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const levelText = (level) => {
+    if (level === 0) return "Main";
+    if (level === 1) return "Sub";
+    return "Child";
+  };
 
-  const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
-  const paginatedCategories = filteredCategories.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // ✅ ROW RENDER
+  const renderRows = (list, level = 0) =>
+    list.map((cat) => (
+      <React.Fragment key={cat._id}>
+        <tr className="hover:bg-gray-50 transition">
+          {/* CATEGORY */}
+          <td className="px-6 py-4">
+            <div
+              className="flex items-center gap-3"
+              style={{ paddingLeft: level * 22 }}
+            >
+              <img
+                src={`${API_URL}${cat.image}`}
+                onError={(e) => (e.target.style.display = "none")}
+                className="w-9 h-9 rounded object-cover border"
+                alt=""
+              />
+              <span className="font-semibold text-gray-900">
+                {cat.text || cat.name}
+              </span>
+            </div>
+          </td>
+
+          {/* SLUG */}
+          <td className="px-6 py-4 font-mono text-sm text-gray-600">
+            {cat.path || cat.slug}
+          </td>
+
+          {/* COLOR */}
+          <td className="px-6 py-4">
+            <span
+              className="w-6 h-6 inline-block rounded-full border"
+              style={{ backgroundColor: cat.bgColor }}
+            />
+          </td>
+
+          {/* LEVEL */}
+          <td className="px-6 py-4">
+            <span
+              className={`px-3 py-1 text-white text-xs font-semibold rounded ${levelBadge(
+                level
+              )}`}
+            >
+              {levelText(level)}
+            </span>
+          </td>
+
+          {/* ✅ ACTIONS */}
+          <td className="px-6 py-4 flex gap-3">
+            <button
+              onClick={() => navigate(`/admin/edit-category/${cat._id}`)}
+              className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+            >
+              Edit
+            </button>
+
+            <button
+              onClick={() => handleDelete(cat._id)}
+              className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+
+        {cat.children?.length > 0 && renderRows(cat.children, level + 1)}
+      </React.Fragment>
+    ));
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[80vh]">
-        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="h-[60vh] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-[#800000] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="p-6 w-full bg-white rounded-lg shadow-lg">
-      {/* Header & Search */}
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h2 className="text-3xl font-bold text-gray-900">Category List</h2>
+    <div className="p-6 w-full">
+      {/* ✅ HEADER */}
+      <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
+        <h2 className="text-3xl font-bold text-gray-900">
+          Category Hierarchy
+        </h2>
+
         <div className="relative w-full md:w-80">
-          <HiOutlineSearch className="absolute left-3 top-2.5 text-gray-400 text-lg" />
+          <HiOutlineSearch className="absolute left-3 top-3 text-gray-400" />
           <input
-            type="text"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg"
             placeholder="Search categories..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary transition"
           />
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-md border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200 table-auto">
-          <thead className="bg-gray-50 sticky top-0 z-10">
+      {/* ✅ TABLE */}
+      <div className="bg-white rounded-xl shadow border overflow-hidden">
+        <table className="min-w-full border-collapse">
+          <thead className="bg-gray-100 text-gray-700 text-sm">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Image</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Path</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Color</th>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+              <th className="px-6 py-3 text-left">Category</th>
+              <th className="px-6 py-3 text-left">Slug</th>
+              <th className="px-6 py-3 text-left">Color</th>
+              <th className="px-6 py-3 text-left">Level</th>
+              <th className="px-6 py-3 text-left">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {paginatedCategories.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="text-center py-6 text-gray-500">No categories match your search.</td>
-              </tr>
+
+          <tbody className="divide-y">
+            {filteredTree.length > 0 ? (
+              renderRows(filteredTree)
             ) : (
-              paginatedCategories.map((cat, idx) => (
-                <tr key={cat._id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                  <td className="px-6 py-4 text-center">
-                    <img
-                      src={`${API_URL}${cat.image}`}
-                      alt={cat.text}
-                      className="w-16 h-16 object-contain rounded-md mx-auto"
-                      onError={(e) => { e.target.style.display = 'none'; }}
-                    />
-                  </td>
-                  <td className="px-6 py-4 font-medium text-gray-900">{cat.text}</td>
-                  <td className="px-6 py-4 text-gray-600 font-mono text-sm">{cat.path}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="w-6 h-6 rounded-full border border-gray-300"
-                        style={{ backgroundColor: cat.bgColor }}
-                        title={cat.bgColor}
-                      />
-                      <span className="text-sm">{cat.bgColor}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setEditCategory(cat)}
-                        className="text-sm px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm({ show: true, category: cat })}
-                        className="text-sm px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+              <tr>
+                <td colSpan="5" className="py-10 text-center text-gray-500">
+                  No categories found
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-6 gap-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-          >
-            Prev
-          </button>
-          {[...Array(totalPages)].map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentPage(idx + 1)}
-              className={`px-3 py-1 rounded ${currentPage === idx + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-            >
-              {idx + 1}
-            </button>
-          ))}
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
-
-      {/* Edit Modal */}
-      {editCategory && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
-            <h3 className="text-xl font-bold mb-4">Edit Category</h3>
-            <form onSubmit={handleEditSubmit}>
-              <label className="block mb-2 text-sm font-medium">Name</label>
-              <input
-                type="text"
-                name="text"
-                value={editCategory.text}
-                onChange={handleEditChange}
-                className="w-full mb-4 p-2 border rounded"
-                required
-              />
-              <label className="block mb-2 text-sm font-medium">Path</label>
-              <input
-                type="text"
-                name="path"
-                value={editCategory.path}
-                onChange={handleEditChange}
-                className="w-full mb-4 p-2 border rounded"
-                required
-              />
-              <label className="block mb-2 text-sm font-medium">Background Color</label>
-              <div className="flex items-center gap-4 mb-4">
-                <input
-                  type="color"
-                  name="bgColor"
-                  value={editCategory.bgColor}
-                  onChange={handleEditChange}
-                  className="w-12 h-10 border rounded"
-                />
-                <input
-                  type="text"
-                  name="bgColor"
-                  value={editCategory.bgColor}
-                  onChange={handleEditChange}
-                  className="flex-1 p-2 border rounded"
-                />
-              </div>
-              <label className="block mb-2 text-sm font-medium">Image</label>
-              <div className="mb-4">
-                {editCategory.image && (
-                  <img
-                    src={`${API_URL}${editCategory.image}`}
-                    alt="Preview"
-                    className="w-24 h-24 object-contain border rounded mb-2"
-                    onError={(e) => { e.target.style.display = 'none'; }}
-                  />
-                )}
-              </div>
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setEditCategory(null)}
-                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {deleteConfirm.show && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">Confirm Deletion</h3>
-            <p className="text-gray-600 mb-4">
-              Are you sure you want to delete "<strong>{deleteConfirm.category.text}</strong>"?
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={() => setDeleteConfirm({ show: false, category: null })}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDelete}
-                disabled={deleting}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 flex items-center gap-2"
-              >
-                {deleting && (
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                )}
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

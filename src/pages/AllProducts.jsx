@@ -68,26 +68,34 @@ const AllProducts = () => {
         </button>
         {showMobileCategories && (
           <div className="bg-white border rounded-md shadow-sm mt-2 p-4 space-y-3">
-            {categories.map((cat) => {
-              const isSelected = category === cat.path;
-              return (
-                <button
-                  key={cat._id}
-                  onClick={() => handleCategoryClick(cat)}
-                  className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md transition ${
-                    isSelected
-                      ? 'bg-primary text-white font-semibold'
-                      : 'text-gray-700 hover:bg-primary/10 hover:text-primary'
-                  }`}
-                >
-                  <span
-                    className="w-4 h-4 rounded-full border border-gray-300"
-                    style={{ backgroundColor: cat.bgColor }}
-                  />
-                  <span>{cat.text}</span>
-                </button>
-              );
-            })}
+            {categories.map((cat) => (
+              <button
+                key={cat._id}
+                onClick={() => handleNavigate(cat.path || cat.slug)}
+                className="relative flex-shrink-0 w-44 h-60 rounded-2xl overflow-hidden shadow-lg group"
+                style={{ backgroundColor: cat.bgColor || "#e5d3d0" }}
+              >
+                {/* ✅ CATEGORY IMAGE */}
+                <img
+                  src={
+                    cat.image?.startsWith("http")
+                      ? cat.image
+                      : `${import.meta.env.VITE_BACKEND_URL}${cat.image}`
+                  }
+                  alt={cat.text}
+                  className="absolute inset-0 w-full h-full object-cover z-10"
+                  onError={(e) => (e.target.style.display = "none")}
+                />
+
+                {/* ✅ DARK OVERLAY */}
+                <div className="absolute inset-0 bg-black/40 z-20" />
+
+                {/* ✅ CATEGORY NAME */}
+                <span className="absolute bottom-4 left-4 z-30 text-white font-semibold text-lg">
+                  {cat.text}
+                </span>
+              </button>
+            ))}
           </div>
         )}
       </div>
@@ -106,10 +114,9 @@ const AllProducts = () => {
                   <button
                     onClick={() => handleCategoryClick(cat)}
                     className={`w-full text-left flex items-center gap-3 p-2 rounded-md transition
-                      ${
-                        isSelected
-                          ? 'bg-primary text-white font-semibold'
-                          : 'text-gray-700 hover:bg-primary/10 hover:text-primary'
+                      ${isSelected
+                        ? 'bg-primary text-white font-semibold'
+                        : 'text-gray-700 hover:bg-primary/10 hover:text-primary'
                       }`}
                   >
                     <span

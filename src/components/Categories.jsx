@@ -1,141 +1,134 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useAppContext } from '../context/AppContext';
+import { useEffect, useState } from "react";
+import { useAppContext } from "../context/AppContext";
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+export default function ShopByCategoryPicker() {
+  const { axios, navigate } = useAppContext();
 
-const Categories = () => {
-  const { navigate, axios } = useAppContext();
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const scrollContainerRef = useRef(null);
+  const [tree, setTree] = useState([]);
+  const [level1, setLevel1] = useState(null);
+  const [level2, setLevel2] = useState(null);
+  const [level3, setLevel3] = useState(null);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const { data } = await axios.get('/api/seller/category/list', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (data.success) {
-          setCategories(data.categories);
-        } else {
-          console.error('Failed to fetch categories:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
+    axios.get("/api/seller/category/tree").then((res) => {
+      setTree(res.data.categories || []);
+    });
   }, [axios]);
 
-  const handleNavigate = useCallback(
-    (path) => {
-      navigate(`/products/${path.toLowerCase()}`);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    },
-    [navigate]
-  );
-
-  const scroll = (direction) => {
-    const container = scrollContainerRef.current;
-    if (container) {
-      const scrollAmount = 300;
-      container.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth',
-      });
+  useEffect(() => {
+    if (level3) {
+      navigate(`/products/${level3.slug || level3.path}`);
     }
-  };
-
-  const getImageUrl = (img) => {
-    if (!img) return null;
-    if (img.startsWith('http')) return img;
-    return `${API_URL}${img}`;
-  };
-
-  if (loading) return <p className="text-[#800000]">Loading categories...</p>;
+  }, [level3, navigate]);
 
   return (
-    <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 px-4 sm:px-6 lg:px-8 mt-16">
-      <h2 className="text-3xl font-semibold mb-8 text-[#800000]">Shop by Category</h2>
+    <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 mt-20 py-20 bg-gradient-to-br from-[#fff7f7] via-[#f5f7ff] to-[#fff]">
 
-      <div className="relative">
-        {/* Left Arrow */}
-        <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-[#800000] text-white hover:bg-[#660000] w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
-          onClick={() => scroll('left')}
-          aria-label="Scroll Left"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
+      {/* Title Centered like Banner */}
+      <div className="max-w-[1600px] mx-auto px-6">
+        <h2 className="text-4xl md:text-5xl font-bold text-[#800000] mb-14 text-center">
+          Shop by Category
+        </h2>
 
-        {/* Scrollable Categories */}
-        <div
-          ref={scrollContainerRef}
-          className="flex overflow-x-auto gap-4 pb-4 scroll-smooth no-scrollbar"
-        >
-          {categories.map(({ _id, text, image, bgColor, path }, index) => (
-            <button
-              key={_id || index}
-              type="button"
-              onClick={() => handleNavigate(path)}
-              className="group relative flex-shrink-0 w-28 sm:w-32 flex flex-col items-center rounded-lg p-4 overflow-hidden shadow-sm transition-transform duration-300 hover:scale-105 hover:shadow-xl"
-              style={{ backgroundColor: bgColor || '#fff5f5' }} // subtle light maroon tint
-            >
-              {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 z-0 group-hover:bg-gradient-to-r group-hover:from-[#800000] group-hover:to-[#660000] transition-opacity duration-500 opacity-0 group-hover:opacity-20 rounded-lg" />
+        {/* CARD CONTAINER */}
+        <div className="bg-white/70 backdrop-blur rounded-[32px] p-10 shadow-2xl">
 
-              {image ? (
-                <img
-                  src={getImageUrl(image)}
-                  alt={text}
-                  className="relative z-10 w-20 h-20 object-contain mb-2 transition-transform duration-300 group-hover:scale-110"
-                  loading="lazy"
-                  draggable={false}
-                  onError={(e) => { e.target.style.display = 'none'; }}
-                />
-              ) : (
-                <div className="relative z-10 w-20 h-20 bg-[#f0e5e5] flex items-center justify-center rounded mb-2 text-[#800000] text-xs">
-                  No Image
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+
+            {/* ✅ LEVEL 1 */}
+            <div className="bg-white rounded-2xl shadow-lg max-h-[420px] overflow-y-auto">
+              {tree.map((c) => (
+                <div
+                  key={c._id}
+                  onClick={() => {
+                    setLevel1(c);
+                    setLevel2(null);
+                    setLevel3(null);
+                  }}
+                  className={`px-6 py-4 cursor-pointer text-lg font-semibold flex justify-between items-center transition-all duration-200
+              ${level1?._id === c._id
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white scale-[1.02]"
+                      : "hover:bg-gray-100 text-gray-800"
+                    }`}
+                >
+                  {c.name || c.text}
+                  <span className="text-2xl">›</span>
                 </div>
+              ))}
+            </div>
+
+            {/* ✅ LEVEL 2 */}
+            <div className="bg-white rounded-2xl shadow-lg max-h-[420px] overflow-y-auto">
+              {level1?.children?.map((c) => (
+                <div
+                  key={c._id}
+                  onClick={() => {
+                    setLevel2(c);
+                    setLevel3(null);
+                  }}
+                  className={`px-6 py-4 cursor-pointer text-lg font-semibold flex justify-between items-center transition-all duration-200
+              ${level2?._id === c._id
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white scale-[1.02]"
+                      : "hover:bg-gray-100 text-gray-800"
+                    }`}
+                >
+                  {c.name || c.text}
+                  <span className="text-2xl">›</span>
+                </div>
+              ))}
+            </div>
+
+            {/* ✅ LEVEL 3 */}
+            <div className="bg-white rounded-2xl shadow-lg max-h-[420px] overflow-y-auto">
+              {level2?.children?.map((c) => (
+                <div
+                  key={c._id}
+                  onClick={() => setLevel3(c)}
+                  className={`px-6 py-4 cursor-pointer text-lg font-semibold flex justify-between items-center transition-all duration-200
+              ${level3?._id === c._id
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white scale-[1.02]"
+                      : "hover:bg-gray-100 text-gray-800"
+                    }`}
+                >
+                  {c.name || c.text}
+                  <span className="text-2xl">›</span>
+                </div>
+              ))}
+            </div>
+
+            {/* ✅ FINAL PREVIEW BOX */}
+            <div className="bg-white rounded-2xl shadow-lg flex items-center justify-center text-center p-10 border-2 border-dashed border-gray-300">
+
+              {level3 ? (
+                <div>
+                  <p className="text-sm text-gray-500 mb-3 uppercase tracking-widest">
+                    Final Category
+                  </p>
+
+                  <p className="text-3xl font-bold text-gray-900 mb-8">
+                    {level3.name || level3.text}
+                  </p>
+
+                  <button
+                    onClick={() =>
+                      navigate(`/products/${level3.slug || level3.path}`)
+                    }
+                    className="px-10 py-4 rounded-2xl bg-[#800000] text-white font-semibold text-lg hover:bg-[#660000] transition shadow-lg"
+                  >
+                    View Products →
+                  </button>
+                </div>
+              ) : (
+                <p className="text-gray-400 text-xl font-medium">
+                  Select final category
+                </p>
               )}
 
-              <span className="relative z-10 text-sm font-medium text-[#800000]">{text}</span>
-            </button>
-          ))}
-        </div>
+            </div>
 
-        {/* Right Arrow */}
-        <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#800000] text-white hover:bg-[#660000] w-10 h-10 flex items-center justify-center rounded-full shadow transition duration-300"
-          onClick={() => scroll('right')}
-          aria-label="Scroll Right"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+          </div>
+        </div>
       </div>
     </section>
   );
-};
-
-export default Categories;
+}

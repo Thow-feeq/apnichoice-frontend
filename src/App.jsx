@@ -32,6 +32,7 @@ import AddCategory from './pages/admin/AddCategory';
 import CategoryList from './pages/admin/CategoryList';
 import SubscriberList from './pages/admin/SubscriberList';
 import AdminLogin from './components/admin/adminLogin';
+import EditCategory from './pages/admin/EditCategory';
 
 const App = () => {
   const location = useLocation();
@@ -60,11 +61,16 @@ const App = () => {
           <Route path='/login' element={<Login />} />
 
           {/* Seller Routes */}
+          {/* Seller Routes */}
           <Route path='/admin' element={isSeller ? <AdminLayout /> : <AdminLogin />}>
             <Route path='add-product' index element={<AddProduct />} />
             <Route path='product-list' element={<ProductList />} />
             <Route path='category-list' element={<CategoryList />} />
             <Route path='add-category' element={<AddCategory />} />
+
+            {/* ✅ THIS IS THE MISSING ROUTE */}
+            <Route path='edit-category/:id' element={<EditCategory />} />
+
             <Route path='orders' element={<Orders />} />
             <Route path='create-coupon' element={<SellerCreateCoupon />} />
             <Route path='edit-product/:id' element={<EditProduct />} />

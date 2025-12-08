@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
-axios.defaults.withCredentials = true; // if you use cookies
-axios.defaults.timeout = 15000; // Increased timeout
+axios.defaults.withCredentials = true;
+axios.defaults.timeout = 15000;
 
 export const AppContext = createContext();
 
@@ -18,6 +17,7 @@ export const AppContextProvider = ({ children }) => {
     const saved = localStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
   });
+
   const [isSeller, setIsSeller] = useState(false);
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [products, setProducts] = useState([]);
@@ -25,11 +25,10 @@ export const AppContextProvider = ({ children }) => {
     const saved = localStorage.getItem("cartItems");
     return saved ? JSON.parse(saved) : {};
   });
+
   const [searchQuery, setSearchQuery] = useState("");
 
-  // -----------------------
-  // Token & Auth Handling
-  // -----------------------
+  // ✅ TOKEN HANDLING
   const setAuthToken = (token) => {
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -50,26 +49,22 @@ export const AppContextProvider = ({ children }) => {
     setAuthToken(null);
   };
 
+  // ✅ SAFE FETCH USER (NO AUTO LOGOUT ON 401)
   const fetchUser = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return logoutUser();
+    if (!token) return;
 
     setAuthToken(token);
 
     try {
       const { data } = await axios.get("/api/user/is-auth");
       if (data.success) {
-        console.log("✅ Fetched user:", data.user);
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
         setCartItems(data.user.cartItems || {});
-      } else {
-        console.warn("⚠️ User not authenticated:", data.message);
-        logoutUser();
       }
     } catch (err) {
-      console.error("❌ fetchUser error:", err.message);
-      logoutUser();
+      console.warn("User not authenticated (silent):", err.response?.status);
     }
   };
 
@@ -82,28 +77,21 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  // -----------------------
-  // Products
-  // -----------------------
+  // ✅ PRODUCTS
   const fetchProducts = async (retries = 3, delay = 1000) => {
     try {
       const { data } = await axios.get("/api/product/list");
       if (data.success) setProducts(data.products);
-      else toast.error(data.message);
     } catch (error) {
-      console.error("Fetch products error:", error.message);
       if (retries > 0) {
-        console.log(`Retrying in ${delay}ms... (${retries} attempts left)`);
         setTimeout(() => fetchProducts(retries - 1, delay * 2), delay);
       } else {
-        toast.error("Failed to fetch products. Check your connection.");
+        toast.error("Failed to fetch products");
       }
     }
   };
 
-  // -----------------------
-  // Cart Operations
-  // -----------------------
+  // ✅ CART (FRONTEND ONLY – NO 401 EVER)
   const addToCart = (id) => {
     const newCart = { ...cartItems, [id]: (cartItems[id] || 0) + 1 };
     setCartItems(newCart);
@@ -128,17 +116,16 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  const getCartCount = () => Object.values(cartItems).reduce((a, b) => a + b, 0);
-  const getCartAmount = () => {
-    return Object.entries(cartItems).reduce((total, [id, qty]) => {
+  const getCartCount = () =>
+    Object.values(cartItems).reduce((a, b) => a + b, 0);
+
+  const getCartAmount = () =>
+    Object.entries(cartItems).reduce((total, [id, qty]) => {
       const prod = products.find((p) => p._id === id);
       return prod ? total + prod.offerPrice * qty : total;
     }, 0);
-  };
 
-  // -----------------------
-  // Initialize
-  // -----------------------
+  // ✅ INIT
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) setAuthToken(token);
@@ -148,17 +135,20 @@ export const AppContextProvider = ({ children }) => {
     fetchProducts();
   }, []);
 
-  // Sync cart with backend when user changes
+  // ✅ SAFE CART BACKEND SYNC (NO POPUP)
   useEffect(() => {
     if (!user) return;
+
     const updateCart = async () => {
       try {
         await axios.post("/api/cart/update", { cartItems });
       } catch (err) {
-        toast.error(err.message || "Failed to update cart");
+        console.warn("Cart sync skipped:", err.response?.status);
       }
     };
-    updateCart();
+
+    const timeout = setTimeout(updateCart, 800);
+    return () => clearTimeout(timeout);
   }, [cartItems, user]);
 
   return (

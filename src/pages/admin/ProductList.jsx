@@ -143,7 +143,7 @@ const ProductList = () => {
                   <td className="px-6 py-4 flex items-center gap-4">
                     <div className="relative group">
                       <img
-                        src={fabric.image?.[0] || "/placeholder.png"}
+                        src={fabric.images?.[0] || "/placeholder.png"}
                         alt="Fabric"
                         className="w-14 h-14 object-cover border rounded-lg shadow-sm group-hover:scale-105 transition-transform"
                       />

@@ -1,76 +1,122 @@
-import React from 'react';
-import { assets } from '../assets/assets';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useAppContext } from '../context/AppContext';
 
-// Textile categories — replace with your actual textile images
-const categories = [
-  {
-    title: "Mens Wear",
-    image: assets.textile_one,
-    url: "/products/menswear",
-  },
-  {
-    title: "Womens Wear",
-    image: assets.textile_two,
-    url: "/products/womenswear",
-  },
-  {
-    title: "Kids Wear",
-    image: assets.kidswear_one,
-    url: "/products/kidswear",
-  },
-  {
-    title: "Ethnic Wear",
-    image: assets.womenswear_one,
-    url: "/products/ethnicwear",
-  },
-];
+const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 
-const ShopByCategory = () => {
+const Categories = () => {
+  const { navigate, axios } = useAppContext();
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const scrollContainerRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await axios.get('/api/seller/category/list');
+
+        if (data.success) {
+          // ✅ ONLY MAIN CATEGORIES (level === 0)
+          const mainOnly = data.categories.filter(cat => cat.level === 0);
+          setCategories(mainOnly);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, [axios]);
+
+  const handleNavigate = useCallback(
+    (path) => {
+      navigate(`/products/${path}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    [navigate]
+  );
+
+  const scroll = (direction) => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const scrollAmount = 300;
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  const getImageUrl = (img) => {
+    if (!img) return null;
+    if (img.startsWith('http')) return img;
+    return `${API_URL}/uploads/${img}`;
+  };
+
+  if (loading) {
+    return <p className="text-[#800000] px-6">Loading categories...</p>;
+  }
+
   return (
-    <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 mt-12 sm:mt-16 max-w-screen-2xl mx-auto px-4">
+    <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 px-4 sm:px-6 lg:px-8 mt-16">
+      <h2 className="text-3xl font-semibold mb-8 text-[#800000]">
+        Shop by Category
+      </h2>
+
+      <div className="relative">
+        {/* LEFT ARROW */}
+        <button
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-[#800000] text-white w-10 h-10 rounded-full flex items-center justify-center shadow hover:bg-[#660000]"
+          onClick={() => scroll('left')}
+        >
+          ‹
+        </button>
+
+        {/* CATEGORY CARDS */}
+        <div
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto gap-6 pb-4 scroll-smooth no-scrollbar"
+        >
+          {categories.map(({ _id, text, image, bgColor, path }) => (
+            <button
+              key={_id}
+              onClick={() => handleNavigate(path)}
+              className="group relative flex-shrink-0 w-44 h-56 rounded-2xl flex flex-col items-center justify-center overflow-hidden shadow-md hover:shadow-xl transition"
+              style={{ backgroundColor: bgColor || '#fdeaea' }}
+            >
+              {image ? (
+                <img
+                  src={getImageUrl(image)}
+                  alt={text}
+                  className="w-full h-full object-cover absolute inset-0 opacity-80 group-hover:opacity-90 transition"
+                />
+              ) : (
+                <div className="absolute inset-0 bg-[#f3dddd]" />
+              )}
+
+              {/* DARK OVERLAY */}
+              <div className="absolute inset-0 bg-black/25 group-hover:bg-black/35 transition" />
+
+              {/* CATEGORY NAME */}
+              <span className="relative z-10 text-white text-lg font-semibold tracking-wide">
+                {text}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* RIGHT ARROW */}
+        <button
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-[#800000] text-white w-10 h-10 rounded-full flex items-center justify-center shadow hover:bg-[#660000]"
+          onClick={() => scroll('right')}
+        >
+          ›
+        </button>
+      </div>
       
-      {/* Section Header */}
-      <div className="max-w-7xl mx-auto text-center mb-12">
-        <h2 className="text-4xl font-extrabold text-[#800000]">
-          Shop by Vastraa Dhee Fashions Category
-        </h2>
-        <p className="mt-2 text-[#4d0000] text-lg">
-          Explore premium fabrics and trending fashion styles
-        </p>
-      </div>
-
-      {/* Category Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
-        {categories.map((cat, index) => (
-          <a
-            key={index}
-            href={cat.url}
-            className="relative group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-transform duration-500 transform hover:-translate-y-2 hover:scale-105"
-          >
-            {/* Category Image */}
-            <img
-              src={cat.image}
-              alt={cat.title}
-              className="w-full h-48 md:h-56 object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#800000]/50 via-[#800000]/10 to-transparent opacity-80 group-hover:opacity-100 transition duration-500" />
-
-            {/* Category Title */}
-            <div className="absolute bottom-4 left-4 text-white text-lg md:text-xl font-semibold z-10 drop-shadow-lg">
-              {cat.title}
-            </div>
-
-            {/* Optional "Shop Now" badge */}
-            <span className="absolute top-3 right-3 bg-[#800000] text-white text-xs px-2 py-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition">
-              Shop Now
-            </span>
-          </a>
-        ))}
-      </div>
     </section>
   );
 };
 
-export default ShopByCategory;
+export default Categories;

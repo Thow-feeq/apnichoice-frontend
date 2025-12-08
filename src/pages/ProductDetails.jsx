@@ -37,12 +37,25 @@ const ProductDetails = () => {
   }
 
   const selectedColor = product.variants[selectedColorIndex];
-  const availableSizes = selectedColor?.sizes || [];
-  const sizeStock = availableSizes.find((s) => s.size === selectedSize);
-  const isOutOfStock = !sizeStock || sizeStock.quantity <= 0;
+  const sizes = selectedColor?.sizes || [];
+
+  // ✔ Total quantity across all variants
+  const totalStock = product.variants.reduce(
+    (sum, v) => sum + v.sizes.reduce((s, sz) => s + sz.quantity, 0),
+    0
+  );
+
+  // ✔ Combine Admin toggle + total size qty
+  const isAdminDisabled = product?.inStock === false;
+  const isOutOfStock = isAdminDisabled || totalStock <= 0;
+
+  const selectedSizeObj =
+    selectedColor?.sizes?.find((s) => s.size === selectedSize) || null;
+  const selectedSizeQty = selectedSizeObj?.quantity || 0;
 
   const handleAddToCart = () => {
     if (!selectedSize) return alert("Please select size");
+    if (selectedSizeQty <= 0) return;
     addToCart(product._id, {
       color: selectedColor.colorName,
       size: selectedSize,
@@ -51,17 +64,10 @@ const ProductDetails = () => {
 
   return (
     <div className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 mt-26 ml-6">
-      {/* Breadcrumbs */}
       <p className="text-sm text-gray-500 mb-4">
         <Link to="/" className="hover:text-[#800000]">Home</Link> /
         <Link to="/products" className="hover:text-[#800000]"> Products</Link> /
-        <Link
-          to={`/products/${product.category.toLowerCase().replace(/\s+/g, "-")}`}
-          className="hover:text-[#800000]"
-        >
-          {product.category}
-        </Link>{" "}
-        /<span className="text-[#b30000] font-medium">{product.name}</span>
+        <span className="text-[#b30000] font-medium">{product.name}</span>
       </p>
 
       <div className="flex flex-col md:flex-row gap-16 mt-24">
@@ -94,20 +100,7 @@ const ProductDetails = () => {
             {product.name}
           </h1>
 
-          {/* Stars */}
-          <div className="flex items-center gap-0.5 mt-1">
-            {Array(5).fill("").map((_, i) => (
-              <img
-                key={i}
-                src={i < 4 ? assets.star_icon : assets.star_dull_icon}
-                alt=""
-                className="md:w-4 w-3.5"
-              />
-            ))}
-            <p className="text-base ml-2">(4)</p>
-          </div>
-
-          {/* Pricing */}
+          {/* Prices */}
           <div className="mt-6">
             <p className="text-gray-500/70 line-through">
               MRP: {currency}{product.price}
@@ -118,18 +111,14 @@ const ProductDetails = () => {
             <span className="text-gray-500/70">(inclusive of all taxes)</span>
           </div>
 
-          {/* Stock */}
-          <p className={`mt-4 font-semibold ${isOutOfStock ? "text-red-600" : "text-[#b30000]"}`}>
+          {/* Stock Status */}
+          <p
+            className={`mt-4 font-semibold ${
+              isOutOfStock ? "text-red-600" : "text-[#b30000]"
+            }`}
+          >
             {isOutOfStock ? "Out of Stock" : "In Stock"}
           </p>
-
-          {/* About */}
-          <p className="text-base font-medium mt-6">About Product</p>
-          <ul className="list-disc ml-4 text-gray-500/70">
-            {product.description.map((d, i) => (
-              <li key={i}>{d}</li>
-            ))}
-          </ul>
 
           {/* Colors */}
           <p className="text-base font-medium mt-6">Color</p>
@@ -143,7 +132,9 @@ const ProductDetails = () => {
                   setThumbnail(v.images?.[0] || product.images[0]);
                 }}
                 className={`w-8 h-8 rounded-full border ${
-                  selectedColorIndex === i ? "border-[#800000]" : "border-[#b30000]/50"
+                  selectedColorIndex === i
+                    ? "border-[#800000]"
+                    : "border-[#b30000]/50"
                 }`}
                 style={{ backgroundColor: v.colorCode }}
               />
@@ -153,13 +144,14 @@ const ProductDetails = () => {
           {/* Sizes */}
           <p className="text-base font-medium mt-6">Size</p>
           <div className="flex gap-2 mt-2 flex-wrap">
-            {availableSizes.map((s, i) => (
+            {sizes.map((s, i) => (
               <button
                 key={i}
                 onClick={() => s.quantity > 0 && setSelectedSize(s.size)}
+                disabled={s.quantity <= 0 || isAdminDisabled}
                 className={`px-4 py-2 border rounded ${
-                  s.quantity <= 0
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  s.quantity <= 0 || isAdminDisabled
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed line-through"
                     : selectedSize === s.size
                     ? "bg-[#800000] text-white"
                     : "hover:bg-[#b30000]/10"
@@ -170,13 +162,13 @@ const ProductDetails = () => {
             ))}
           </div>
 
-          {/* Action Buttons */}
+          {/* ACTION BUTTONS */}
           <div className="flex items-center mt-10 gap-4 text-base">
             <button
               onClick={handleAddToCart}
-              disabled={isOutOfStock}
+              disabled={isOutOfStock || !selectedSize || selectedSizeQty <= 0}
               className={`w-full py-3.5 font-medium transition ${
-                isOutOfStock
+                isOutOfStock || selectedSizeQty <= 0
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : "bg-[#ffebeb] text-[#800000] hover:bg-[#ffd6d6]"
               }`}
@@ -189,33 +181,15 @@ const ProductDetails = () => {
                 handleAddToCart();
                 navigate("/cart");
               }}
-              disabled={isOutOfStock}
+              disabled={isOutOfStock || !selectedSize || selectedSizeQty <= 0}
               className={`w-full py-3.5 font-medium transition ${
-                isOutOfStock
+                isOutOfStock || selectedSizeQty <= 0
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : "bg-[#800000] text-white hover:bg-[#b30000]"
               }`}
             >
               Buy now
             </button>
-          </div>
-        </div>
-      </div>
-
-      {/* RELATED PRODUCTS */}
-      <div className="flex flex-col items-center mt-20 w-full relative">
-        <p className="text-3xl font-medium mb-4 text-[#800000]">Related Products</p>
-
-        <div className="relative w-full px-4 md:px-10">
-          <div
-            id="related-slider"
-            className="flex overflow-x-auto no-scrollbar gap-4 py-4 px-6 scroll-smooth"
-          >
-            {relatedProducts.map((p) => (
-              <div key={p._id} className="min-w-[180px]">
-                {/* Keep your ProductCard component here */}
-              </div>
-            ))}
           </div>
         </div>
       </div>
