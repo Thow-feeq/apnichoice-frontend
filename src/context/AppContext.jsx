@@ -28,34 +28,21 @@ export const AppContextProvider = ({ children }) => {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ✅ TOKEN HANDLING
-  const setAuthToken = (token) => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      localStorage.setItem("token", token);
-    } else {
-      delete axios.defaults.headers.common["Authorization"];
-      localStorage.removeItem("token");
-    }
-  };
-
-  const logoutUser = () => {
-    console.log("🔴 Logging out user");
+  // ✅ LOGOUT (COOKIE BASED)
+  const logoutUser = async () => {
+    try {
+      await axios.get("/api/user/logout");
+    } catch {}
     setUser(null);
     setIsSeller(false);
     setCartItems({});
     localStorage.removeItem("user");
     localStorage.removeItem("cartItems");
-    setAuthToken(null);
+    navigate("/");
   };
 
-  // ✅ SAFE FETCH USER (NO AUTO LOGOUT ON 401)
+  // ✅ FETCH USER (COOKIE ONLY)
   const fetchUser = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    setAuthToken(token);
-
     try {
       const { data } = await axios.get("/api/user/is-auth");
       if (data.success) {
@@ -63,8 +50,8 @@ export const AppContextProvider = ({ children }) => {
         localStorage.setItem("user", JSON.stringify(data.user));
         setCartItems(data.user.cartItems || {});
       }
-    } catch (err) {
-      console.warn("User not authenticated (silent):", err.response?.status);
+    } catch {
+      // ✅ silent fail – NO popup
     }
   };
 
@@ -91,7 +78,7 @@ export const AppContextProvider = ({ children }) => {
     }
   };
 
-  // ✅ CART (FRONTEND ONLY – NO 401 EVER)
+  // ✅ CART – FRONTEND
   const addToCart = (id) => {
     const newCart = { ...cartItems, [id]: (cartItems[id] || 0) + 1 };
     setCartItems(newCart);
@@ -127,23 +114,20 @@ export const AppContextProvider = ({ children }) => {
 
   // ✅ INIT
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) setAuthToken(token);
-
     fetchUser();
     fetchSeller();
     fetchProducts();
   }, []);
 
-  // ✅ SAFE CART BACKEND SYNC (NO POPUP)
+  // ✅ SAFE CART BACKEND SYNC (COOKIE)
   useEffect(() => {
     if (!user) return;
 
     const updateCart = async () => {
       try {
         await axios.post("/api/cart/update", { cartItems });
-      } catch (err) {
-        console.warn("Cart sync skipped:", err.response?.status);
+      } catch {
+        // ✅ no popup
       }
     };
 
