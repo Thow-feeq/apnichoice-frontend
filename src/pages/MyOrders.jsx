@@ -8,15 +8,21 @@ const MyOrders = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
+    if (user?._id) {
       const fetchOrders = async () => {
         try {
-          const { data } = await axios.get("/api/order/user");
-          if (data.success) setMyOrders(data.orders);
+          const { data } = await axios.post("/api/order/user", {
+            userId: user._id,   // ✅ REQUIRED
+          });
+
+          if (data.success) {
+            setMyOrders(data.orders);
+          }
         } catch (error) {
           console.error("Error fetching orders:", error);
         }
       };
+
       fetchOrders();
     }
   }, [user]);
