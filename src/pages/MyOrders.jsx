@@ -11,8 +11,12 @@ const MyOrders = () => {
     if (user?._id) {
       const fetchOrders = async () => {
         try {
+          const token = localStorage.getItem("token");
+
           const { data } = await axios.get("/api/order/user", {
-            userId: user._id,   // ✅ REQUIRED
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           });
 
           if (data.success) {
@@ -22,7 +26,6 @@ const MyOrders = () => {
           console.error("Error fetching orders:", error);
         }
       };
-
       fetchOrders();
     }
   }, [user]);
