@@ -11,7 +11,7 @@ const MyOrders = () => {
     if (user?._id) {
       const fetchOrders = async () => {
         try {
-          const { data } = await axios.post("/api/order/user", {
+          const { data } = await axios.get("/api/order/user", {
             userId: user._id,   // ✅ REQUIRED
           });
 
