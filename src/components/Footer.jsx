@@ -91,7 +91,7 @@ const Footer = () => {
 
       {/* WhatsApp Button */}
       <a
-        href="https://wa.me/+919600158380"
+        href="https://wa.me/+918778943194"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 left-6 z-30"
