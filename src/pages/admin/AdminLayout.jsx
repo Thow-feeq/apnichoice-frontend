@@ -16,6 +16,7 @@ const AdminLayout = () => {
     { name: "Add Category", path: "/admin/add-category", icon: assets.add_icon },
     { name: "Category List", path: "/admin/category-list", icon: assets.product_list_icon },
     { name: "Orders", path: "/admin/orders", icon: assets.order_icon },
+    { name: "Sales Report", path: "/admin/sales-report", icon: assets.order_icon },
     { name: "Create Coupon", path: "/admin/create-coupon", icon: assets.create_coupon },
     { name: "User Lists", path: "/admin/UserList", icon: assets.user_list },
     { name: "Coupon List", path: "/admin/coupons", icon: assets.coupon_list },
@@ -76,10 +77,9 @@ const AdminLayout = () => {
               <NavLink
                 key={item.name}
                 to={item.path}
-                end={item.path === "/seller"}
                 className={({ isActive }) =>
-                  `flex items-center px-6 py-3 gap-4 text-sm font-medium rounded-l-full transition-all 
-                   ${isActive
+                  `flex items-center px-6 py-3 gap-4 text-sm font-medium rounded-md transition-all 
+     ${isActive
                     ? "bg-primary/10 text-primary border-l-4 border-primary"
                     : "hover:bg-gray-100 text-gray-700"}`
                 }

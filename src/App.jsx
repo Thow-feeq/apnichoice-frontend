@@ -33,6 +33,7 @@ import CategoryList from './pages/admin/CategoryList';
 import SubscriberList from './pages/admin/SubscriberList';
 import AdminLogin from './components/admin/adminLogin';
 import EditCategory from './pages/admin/EditCategory';
+import SalesReport from './pages/admin/SalesReport';
 
 const App = () => {
   const location = useLocation();
@@ -79,6 +80,7 @@ const App = () => {
             <Route path='coupons' element={<CouponList />} />
             <Route path='login' element={<AdminLogin />} />
             <Route path='dashboard' element={<AdminDashboard />} />
+            <Route path='sales-report' element={<SalesReport />} />
           </Route>
         </Routes>
       </div>
