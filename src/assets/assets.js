@@ -27,9 +27,9 @@ import glass_banner_3 from "./glass_banner_3.jpg";
 import eye_glasses from "./eye-glasses.jpg";
 import main_banner_bg_sm from "./main_banner_bg_sm.png";
 
-import textile_one from "./textile_one.jpg";
-import textile_two from "./textile_two.jpg";
-import textile_three from "./textile_two.jpg";   // ✅ exists
+import textile_one from "./textile_one.png";
+// import textile_two from "./textile_one.png";
+// import textile_three from "./textile_one.png";   // ✅ exists
 
 // ✅ FIX: Removed textile_one_sm (it does NOT exist)
 
@@ -87,8 +87,8 @@ export const assets = {
   eye_glasses,
   main_banner_bg_sm,
   textile_one,
-  textile_two,
-  textile_three,
+  textile_one,
+  textile_one,
   dashboard_icon,
   create_coupon,
   subscriber_list,
@@ -165,11 +165,11 @@ export const footerLinks = [
   {
     title: "Need help?",
     links: [
-      { text: "Delivery Information", url: "#" },
-      { text: "Return & Refund Policy", url: "#" },
-      { text: "Payment Methods", url: "#" },
-      { text: "Track your Order", url: "#" },
-      { text: "Contact Us", url: "#" },
+      { text: "Delivery Information", url: "/delivery-info" },
+      { text: "Return & Refund Policy", url: "/return-refund-policy" },
+      { text: "Payment Methods", url: "/payment-methods" },
+      { text: "Track your Order", url: "/track-order" },
+      { text: "Contact Us", url: "/contact" },
     ],
   },
   {

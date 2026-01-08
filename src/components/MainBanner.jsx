@@ -6,8 +6,7 @@ import 'swiper/css';
 
 const bannerImages = [
   assets.textile_one,
-  assets.textile_two,
-  assets.textile_three,
+ 
 ];
 
 const MainBanner = () => {

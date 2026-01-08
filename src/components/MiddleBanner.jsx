@@ -7,8 +7,7 @@ import 'swiper/css';
 // Textile banner images
 const bannerImages = [
   assets.textile_one,
-  assets.textile_two,
-  assets.textile_three,
+ 
 ];
 
 // Textile categories

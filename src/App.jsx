@@ -34,6 +34,10 @@ import SubscriberList from './pages/admin/SubscriberList';
 import AdminLogin from './components/admin/adminLogin';
 import EditCategory from './pages/admin/EditCategory';
 import SalesReport from './pages/admin/SalesReport';
+import DeliveryInfo from './pages/DeliveryInfo';
+import PaymentMethods from './pages/PaymentMethods';
+import ReturnRefundPolicy from './pages/ReturnRefundPolicy';
+import TrackOrder from './pages/TrackyourOrder';
 
 const App = () => {
   const location = useLocation();
@@ -60,6 +64,12 @@ const App = () => {
           <Route path='/contact' element={<Contact />} />
           <Route path='/about' element={<About />} />
           <Route path='/login' element={<Login />} />
+
+          {/* New Pages */}
+          <Route path='/delivery-info' element={<DeliveryInfo />} />
+          <Route path='/return-refund-policy' element={<ReturnRefundPolicy />} />
+          <Route path='/payment-methods' element={<PaymentMethods />} />
+          <Route path='/track-order' element={<TrackOrder />} />
 
           {/* Seller Routes */}
           {/* Seller Routes */}
