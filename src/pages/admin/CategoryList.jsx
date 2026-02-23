@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../context/AppContext";
 import { HiOutlineSearch } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
@@ -14,14 +14,16 @@ const CategoryList = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // ✅ FETCH
+  /* ================= FETCH ================= */
   const fetchCategories = async () => {
     try {
-      const { data } = await axios.get("/api/seller/category/list");
+      const { data } = await axios.get("/api/seller/category/tree");
+
       if (data.success) {
-        setCategories(data.categories);
+        setCategories(data.categories); // already hierarchical
       }
     } catch (err) {
+      console.log(err);
       toast.error("Failed to load categories");
     } finally {
       setLoading(false);
@@ -32,12 +34,15 @@ const CategoryList = () => {
     fetchCategories();
   }, []);
 
-  // ✅ DELETE
+  /* ================= DELETE ================= */
   const handleDelete = async (id) => {
-    if (!confirm("Delete this category?")) return;
+    if (!window.confirm("Delete this category?")) return;
 
     try {
-      const { data } = await axios.delete(`/api/seller/category/${id}`);
+      const { data } = await axios.delete(
+        `/api/seller/category/delete/${id}`
+      );
+
       if (data.success) {
         toast.success("Category deleted");
         fetchCategories();
@@ -49,41 +54,22 @@ const CategoryList = () => {
     }
   };
 
-  // ✅ BUILD TREE
-  const categoryTree = useMemo(() => {
-    const map = {};
-    const roots = [];
-
-    categories.forEach((cat) => {
-      map[cat._id] = { ...cat, children: [] };
-    });
-
-    categories.forEach((cat) => {
-      if (cat.parent) {
-        map[cat.parent]?.children.push(map[cat._id]);
-      } else {
-        roots.push(map[cat._id]);
-      }
-    });
-
-    return roots;
-  }, [categories]);
-
-  // ✅ SEARCH
+  /* ================= SEARCH ================= */
   const filterTree = (nodes) =>
     nodes
-      .filter((n) =>
-        (n.text?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-        (n.path?.toLowerCase() || "").includes(searchTerm.toLowerCase())
+      .filter(
+        (n) =>
+          n.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          n.path?.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .map((n) => ({
         ...n,
         children: n.children ? filterTree(n.children) : [],
       }));
 
-  const filteredTree = filterTree(categoryTree);
+  const filteredTree = filterTree(categories);
 
-  // ✅ LEVEL BADGE
+  /* ================= LEVEL BADGE ================= */
   const levelBadge = (level) => {
     if (level === 0) return "bg-green-600";
     if (level === 1) return "bg-blue-600";
@@ -96,7 +82,7 @@ const CategoryList = () => {
     return "Child";
   };
 
-  // ✅ ROW RENDER
+  /* ================= RENDER ================= */
   const renderRows = (list, level = 0) =>
     list.map((cat) => (
       <React.Fragment key={cat._id}>
@@ -107,21 +93,24 @@ const CategoryList = () => {
               className="flex items-center gap-3"
               style={{ paddingLeft: level * 22 }}
             >
-              <img
-                src={`${API_URL}${cat.image}`}
-                onError={(e) => (e.target.style.display = "none")}
-                className="w-9 h-9 rounded object-cover border"
-                alt=""
-              />
+              {cat.image && (
+                <img
+                  src={`${API_URL}${cat.image}`}
+                  onError={(e) => (e.target.style.display = "none")}
+                  className="w-9 h-9 rounded object-cover border"
+                  alt=""
+                />
+              )}
+
               <span className="font-semibold text-gray-900">
-                {cat.text || cat.name}
+                {cat.name}
               </span>
             </div>
           </td>
 
           {/* SLUG */}
           <td className="px-6 py-4 font-mono text-sm text-gray-600">
-            {cat.path || cat.slug}
+            {cat.slug}
           </td>
 
           {/* COLOR */}
@@ -136,17 +125,19 @@ const CategoryList = () => {
           <td className="px-6 py-4">
             <span
               className={`px-3 py-1 text-white text-xs font-semibold rounded ${levelBadge(
-                level
+                cat.level
               )}`}
             >
-              {levelText(level)}
+              {levelText(cat.level)}
             </span>
           </td>
 
-          {/* ✅ ACTIONS */}
+          {/* ACTIONS */}
           <td className="px-6 py-4 flex gap-3">
             <button
-              onClick={() => navigate(`/admin/edit-category/${cat._id}`)}
+              onClick={() =>
+                navigate(`/admin/edit-category/${cat._id}`)
+              }
               className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
             >
               Edit
@@ -161,7 +152,8 @@ const CategoryList = () => {
           </td>
         </tr>
 
-        {cat.children?.length > 0 && renderRows(cat.children, level + 1)}
+        {cat.children?.length > 0 &&
+          renderRows(cat.children, level + 1)}
       </React.Fragment>
     ));
 
@@ -175,7 +167,7 @@ const CategoryList = () => {
 
   return (
     <div className="p-6 w-full">
-      {/* ✅ HEADER */}
+      {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
         <h2 className="text-3xl font-bold text-gray-900">
           Category Hierarchy
@@ -192,7 +184,7 @@ const CategoryList = () => {
         </div>
       </div>
 
-      {/* ✅ TABLE */}
+      {/* TABLE */}
       <div className="bg-white rounded-xl shadow border overflow-hidden">
         <table className="min-w-full border-collapse">
           <thead className="bg-gray-100 text-gray-700 text-sm">

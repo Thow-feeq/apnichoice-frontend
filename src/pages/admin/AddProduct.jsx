@@ -41,39 +41,45 @@ export default function AddProduct() {
   const [variants, setVariants] = useState([emptyVariant]);
 
   // ✅ FETCH CATEGORY TREE
+  // ✅ FETCH CATEGORY TREE
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data } = await axios.get("/api/seller/category/list");
+        const { data } = await axios.get("/api/seller/category/tree");
         if (data.success) {
-          const cats = data.categories;
-          setAllCategories(cats);
-          setMainCats(cats.filter((c) => !c.parent));
+          const roots = data.categories;
+
+          setMainCats(roots);
         }
       } catch {
         toast.error("Failed to load categories");
       }
     };
+
     fetchCategories();
   }, [axios]);
 
-  // ✅ MAIN → SUB
+  // ✅ MAIN → SUB (USE CHILDREN DIRECTLY)
   useEffect(() => {
     if (!mainCat) return;
-    const subs = allCategories.filter((c) => c.parent === mainCat);
-    setSubCats(subs);
+
+    const selected = mainCats.find((c) => c._id === mainCat);
+    setSubCats(selected?.children || []);
+
     setSubCat("");
     setChildCats([]);
     setChildCat("");
-  }, [mainCat, allCategories]);
+  }, [mainCat, mainCats]);
 
-  // ✅ SUB → CHILD
+  // ✅ SUB → CHILD (USE CHILDREN DIRECTLY)
   useEffect(() => {
     if (!subCat) return;
-    const childs = allCategories.filter((c) => c.parent === subCat);
-    setChildCats(childs);
+
+    const selected = subCats.find((c) => c._id === subCat);
+    setChildCats(selected?.children || []);
+
     setChildCat("");
-  }, [subCat, allCategories]);
+  }, [subCat, subCats]);
 
   // ✅ HELPERS
   const filePreview = (file) => (file ? URL.createObjectURL(file) : null);

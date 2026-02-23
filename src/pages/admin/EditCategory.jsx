@@ -8,7 +8,7 @@ const EditCategory = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [text, setText] = useState("");
+  const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [bgColor, setBgColor] = useState("#800000");
   const [loading, setLoading] = useState(false);
@@ -16,7 +16,7 @@ const EditCategory = () => {
   useEffect(() => {
     axios.get(`/api/seller/category/${id}`).then(({ data }) => {
       if (data.success) {
-        setText(data.category.text);
+        setName(data.category.name);   // ✅ FIXED
         setSlug(data.category.slug);
         setBgColor(data.category.bgColor);
       }
@@ -27,7 +27,7 @@ const EditCategory = () => {
     setLoading(true);
     try {
       const { data } = await axios.put(`/api/seller/category/${id}`, {
-        text,
+        name,        // ✅ FIXED
         slug,
         bgColor
       });
@@ -36,7 +36,7 @@ const EditCategory = () => {
         toast.success("Category Updated");
         navigate("/admin/category-list");
       }
-    } catch {
+    } catch (err) {
       toast.error("Update failed");
     } finally {
       setLoading(false);
@@ -50,8 +50,8 @@ const EditCategory = () => {
       <input
         className="border w-full p-2 mb-3"
         placeholder="Category name"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
       />
 
       <input
