@@ -84,7 +84,7 @@ const AddCategory = () => {
 
             {node.image && (
               <img
-                src={`${API_URL}${node.image}`}
+                src={node.image}
                 className="w-7 h-7 rounded object-cover"
                 alt=""
               />

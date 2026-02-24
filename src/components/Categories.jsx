@@ -36,7 +36,9 @@ export default function ShopByCategoryPicker() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
             {/* ✅ LEVEL 1 */}
-            <div className="bg-white rounded-2xl shadow-lg max-h-[420px] overflow-y-auto">
+            {/* ✅ LEVEL 1 WITH IMAGE */}
+            <div className="space-y-4 max-h-[420px] overflow-y-auto">
+
               {tree.map((c) => (
                 <div
                   key={c._id}
@@ -45,20 +47,33 @@ export default function ShopByCategoryPicker() {
                     setLevel2(null);
                     setLevel3(null);
                   }}
-                  className={`px-6 py-4 cursor-pointer text-lg font-semibold flex justify-between items-center transition-all duration-200
-              ${level1?._id === c._id
-                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white scale-[1.02]"
-                      : "hover:bg-gray-100 text-gray-800"
-                    }`}
+                  className={`relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300
+        ${level1?._id === c._id ? "ring-4 ring-indigo-500 scale-[1.02]" : ""}
+      `}
                 >
-                  {c.name || c.text}
-                  <span className="text-2xl">›</span>
+
+                  <img
+                    src={c.image}
+                    alt={c.name}
+                    className="w-full h-44 object-cover group-hover:scale-105 transition"
+                  />
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+                  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center text-white">
+                    <span className="text-xl font-bold">{c.name}</span>
+                    <span className="text-2xl">›</span>
+                  </div>
+
                 </div>
               ))}
+
             </div>
 
             {/* ✅ LEVEL 2 */}
-            <div className="bg-white rounded-2xl shadow-lg max-h-[420px] overflow-y-auto">
+            {/* ✅ LEVEL 2 WITH IMAGE */}
+            <div className="space-y-4 max-h-[420px] overflow-y-auto">
+
               {level1?.children?.map((c) => (
                 <div
                   key={c._id}
@@ -66,34 +81,64 @@ export default function ShopByCategoryPicker() {
                     setLevel2(c);
                     setLevel3(null);
                   }}
-                  className={`px-6 py-4 cursor-pointer text-lg font-semibold flex justify-between items-center transition-all duration-200
-              ${level2?._id === c._id
-                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white scale-[1.02]"
-                      : "hover:bg-gray-100 text-gray-800"
-                    }`}
+                  className={`relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300
+        ${level2?._id === c._id ? "ring-4 ring-indigo-500 scale-[1.02]" : ""}
+      `}
                 >
-                  {c.name || c.text}
-                  <span className="text-2xl">›</span>
+
+                  {/* IMAGE */}
+                  <img
+                    src={c.image}
+                    alt={c.name}
+                    className="w-full h-40 object-cover group-hover:scale-105 transition"
+                  />
+
+                  {/* OVERLAY */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+                  {/* TEXT */}
+                  <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center text-white">
+                    <span className="text-lg font-bold">{c.name}</span>
+                    <span className="text-2xl">›</span>
+                  </div>
+
                 </div>
               ))}
+
             </div>
 
             {/* ✅ LEVEL 3 */}
-            <div className="bg-white rounded-2xl shadow-lg max-h-[420px] overflow-y-auto">
+            {/* ✅ LEVEL 3 WITH IMAGE */}
+            <div className="space-y-4 max-h-[420px] overflow-y-auto">
+
               {level2?.children?.map((c) => (
                 <div
                   key={c._id}
                   onClick={() => setLevel3(c)}
-                  className={`px-6 py-4 cursor-pointer text-lg font-semibold flex justify-between items-center transition-all duration-200
-              ${level3?._id === c._id
-                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white scale-[1.02]"
-                      : "hover:bg-gray-100 text-gray-800"
-                    }`}
+                  className={`relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300
+        ${level3?._id === c._id ? "ring-4 ring-indigo-500 scale-[1.02]" : ""}
+      `}
                 >
-                  {c.name || c.text}
-                  <span className="text-2xl">›</span>
+
+                  {/* IMAGE */}
+                  <img
+                    src={c.image}
+                    alt={c.name}
+                    className="w-full h-36 object-cover group-hover:scale-105 transition"
+                  />
+
+                  {/* OVERLAY */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+                  {/* TEXT */}
+                  <div className="absolute bottom-3 left-4 right-4 flex justify-between items-center text-white">
+                    <span className="text-lg font-semibold">{c.name}</span>
+                    <span className="text-2xl">›</span>
+                  </div>
+
                 </div>
               ))}
+
             </div>
 
             {/* ✅ FINAL PREVIEW BOX */}
