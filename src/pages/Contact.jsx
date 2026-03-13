@@ -12,7 +12,7 @@ const Contact = () => {
   });
 
   const [errors, setErrors] = useState({});
-  const officialEmail = "JDPrimehub@Jaydhee.com";
+  const officialEmail = "jprajan@gmail.com";
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -122,7 +122,7 @@ const Contact = () => {
               <h3 className="font-semibold">Showroom</h3>
               <p>Vastraa Dhee Fashions</p>
               <p>No#72, Sangeetha Nagar, Thirukazhukundram Road, Pooncheri Koot road, Mamallapuram</p>
-              <p>📍 Easily accessible in the heart of [City/Area]</p>
+              {/* <p>📍 Easily accessible in the heart of [City/Area]</p> */}
             </div>
           </div>
 

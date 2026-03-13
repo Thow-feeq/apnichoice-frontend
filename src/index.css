@@ -22,3 +22,25 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+@media print {
+
+  body * {
+    visibility: hidden;
+  }
+
+  #invoice-section, #invoice-section * {
+    visibility: visible;
+  }
+
+  #invoice-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  button {
+    display: none;
+  }
+
+}

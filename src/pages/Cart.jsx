@@ -92,11 +92,15 @@ const Cart = () => {
 
     const payload = {
       userId: user._id,
-      items: cartArray.map(item => ({ product: item._id, quantity: item.quantity })),
+      items: cartArray.map(item => ({
+        product: item._id,
+        quantity: item.quantity,
+        color: item.colorName,
+        size: item.size
+      })),
       address: selectedAddress._id,
-      couponCode: couponCode || null,
+      couponCode: couponCode || null
     };
-
     try {
       setLoading(true);
 

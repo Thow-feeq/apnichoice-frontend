@@ -80,7 +80,7 @@ const ProductCard = ({ product }) => {
           {!cartItems?.[product._id] ? (
             <button
               onClick={() => addToCart(product._id)}
-              disabled={!product.inStock}
+              disabled={product.inStock}
               className={`w-full flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold transition 
                 ${product.inStock
                   ? "bg-[#800000] text-white hover:bg-[#b30000] shadow-lg"

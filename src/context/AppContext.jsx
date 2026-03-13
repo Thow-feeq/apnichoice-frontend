@@ -32,7 +32,7 @@ export const AppContextProvider = ({ children }) => {
   const logoutUser = async () => {
     try {
       await axios.get("/api/user/logout");
-    } catch {}
+    } catch { }
     setUser(null);
     setIsSeller(false);
     setCartItems({});
@@ -44,14 +44,27 @@ export const AppContextProvider = ({ children }) => {
   // ✅ FETCH USER (COOKIE ONLY)
   const fetchUser = async () => {
     try {
-      const { data } = await axios.get("/api/user/is-auth");
+
+      const token = localStorage.getItem("token");
+
+      const { data } = await axios.get("/api/user/is-auth", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+
       if (data.success) {
+
         setUser(data.user);
         localStorage.setItem("user", JSON.stringify(data.user));
-        setCartItems(data.user.cartItems || {});
+
+        const backendCart = data.user.cartItems || {};
+
+        setCartItems(backendCart);
+        localStorage.setItem("cartItems", JSON.stringify(backendCart));
+
       }
-    } catch {
-      // ✅ silent fail – NO popup
+
+    } catch (err) {
+      setUser(null);
     }
   };
 
@@ -125,7 +138,14 @@ export const AppContextProvider = ({ children }) => {
 
     const updateCart = async () => {
       try {
-        await axios.post("/api/cart/update", { cartItems });
+        const token = localStorage.getItem("token");
+        await axios.post(
+          "/api/cart/update",
+          { cartItems },
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}
+          }
+        );
       } catch {
         // ✅ no popup
       }

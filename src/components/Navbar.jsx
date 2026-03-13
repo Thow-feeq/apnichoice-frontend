@@ -118,12 +118,12 @@ const Navbar = () => {
               <NavLink to="/" className="text-sm hover:text-[#800000]/80 transition">Home</NavLink>
               <NavLink to="/products" className="text-sm hover:text-[#800000]/80 transition">Products</NavLink>
               <NavLink to="/contact" className="text-sm hover:text-[#800000]/80 transition">Contact</NavLink>
-              <div
+              {/* <div
                 className="cursor-pointer text-sm hover:text-[#800000]/80 transition"
                 onClick={() => setShowLocationPrompt(true)}
               >
                 {location || "↓ Location"}
-              </div>
+              </div> */}
             </div>
 
             <div className="flex items-center space-x-4">

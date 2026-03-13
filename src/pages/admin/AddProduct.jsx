@@ -1,293 +1,526 @@
 import React, { useState, useEffect } from "react";
 import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
-import { HiPlus, HiTrash } from "react-icons/hi";
 
-export default function AddProduct() {
-  const { axios } = useAppContext();
+/* TEXTILE SIZE GROUPS */
 
-  const sizesList = ["S", "M", "L", "XL", "XXL", "XXXL"];
+const SIZE_GROUPS = {
+  mens_shirt: ["S","M","L","XL","XXL","XXXL"],
+  mens_pant: ["28","30","32","34","36","38","40","42"],
+  womens_kurti: ["XS","S","M","L","XL","XXL","3XL","4XL"],
+  womens_blouse: ["32","34","36","38","40","42","44"],
+  saree: ["Free Size"],
+  kids: ["1Y","2Y","3Y","4Y","5Y","6Y","7Y","8Y","9Y","10Y"]
+};
 
-  // ✅ BASIC PRODUCT
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [offerPrice, setOfferPrice] = useState("");
+export default function AddProduct(){
 
-  // ✅ CATEGORY STATES (3 LEVEL)
-  const [allCategories, setAllCategories] = useState([]);
-  const [mainCats, setMainCats] = useState([]);
-  const [subCats, setSubCats] = useState([]);
-  const [childCats, setChildCats] = useState([]);
+const { axios } = useAppContext();
 
-  const [mainCat, setMainCat] = useState("");
-  const [subCat, setSubCat] = useState("");
-  const [childCat, setChildCat] = useState("");
+/* BASIC */
 
-  const [isLoading, setIsLoading] = useState(false);
+const [name,setName] = useState("");
+const [description,setDescription] = useState("");
+const [price,setPrice] = useState("");
+const [offerPrice,setOfferPrice] = useState("");
 
-  // ✅ MAIN IMAGES
-  const [mainFiles, setMainFiles] = useState([null, null, null, null]);
+/* CATEGORY */
 
-  // ✅ VARIANTS
-  const emptyVariant = {
-    colorName: "",
-    colorCode: "#ef4444",
-    pattern: "",
-    images: [null, null, null, null],
-    sizes: [],
-  };
+const [categories,setCategories] = useState([]);
 
-  const [variants, setVariants] = useState([emptyVariant]);
+const [mainCat,setMainCat] = useState("");
+const [subCat,setSubCat] = useState("");
+const [childCat,setChildCat] = useState("");
 
-  // ✅ FETCH CATEGORY TREE
-  // ✅ FETCH CATEGORY TREE
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data } = await axios.get("/api/seller/category/tree");
-        if (data.success) {
-          const roots = data.categories;
+const [mainSlug,setMainSlug] = useState("");
+const [subSlug,setSubSlug] = useState("");
+const [childSlug,setChildSlug] = useState("");
 
-          setMainCats(roots);
-        }
-      } catch {
-        toast.error("Failed to load categories");
-      }
-    };
+/* PRODUCT */
 
-    fetchCategories();
-  }, [axios]);
+const [images,setImages] = useState([]);
+const [stock,setStock] = useState("");
+const [hasVariants,setHasVariants] = useState(false);
 
-  // ✅ MAIN → SUB (USE CHILDREN DIRECTLY)
-  useEffect(() => {
-    if (!mainCat) return;
+/* VARIANTS */
 
-    const selected = mainCats.find((c) => c._id === mainCat);
-    setSubCats(selected?.children || []);
+const [variants,setVariants] = useState([]);
 
-    setSubCat("");
-    setChildCats([]);
-    setChildCat("");
-  }, [mainCat, mainCats]);
+/* LOAD CATEGORIES */
 
-  // ✅ SUB → CHILD (USE CHILDREN DIRECTLY)
-  useEffect(() => {
-    if (!subCat) return;
+useEffect(()=>{
+loadCategories();
+},[]);
 
-    const selected = subCats.find((c) => c._id === subCat);
-    setChildCats(selected?.children || []);
+const loadCategories = async()=>{
 
-    setChildCat("");
-  }, [subCat, subCats]);
+try{
 
-  // ✅ HELPERS
-  const filePreview = (file) => (file ? URL.createObjectURL(file) : null);
+const res = await axios.get("/api/category/list");
 
-  const setMainFile = (i, f) => {
-    const arr = [...mainFiles];
-    arr[i] = f;
-    setMainFiles(arr);
-  };
+if(res.data.success){
+setCategories(res.data.categories);
+}
 
-  const removeMainFile = (i) => {
-    const arr = [...mainFiles];
-    arr[i] = null;
-    setMainFiles(arr);
-  };
+}catch(err){
+toast.error("Category load failed");
+}
 
-  const updateVariant = (i, k, v) => {
-    const arr = [...variants];
-    arr[i][k] = v;
-    setVariants(arr);
-  };
+};
 
-  const setVariantFile = (vi, ii, f) => {
-    const arr = [...variants];
-    arr[vi].images[ii] = f;
-    setVariants(arr);
-  };
+/* CATEGORY FILTER */
 
-  const toggleSize = (vi, size) => {
-    const arr = [...variants];
-    const found = arr[vi].sizes.find((s) => s.size === size);
-    if (found) {
-      arr[vi].sizes = arr[vi].sizes.filter((s) => s.size !== size);
-    } else {
-      arr[vi].sizes.push({ size, quantity: 1 });
-    }
-    setVariants(arr);
-  };
+const mainCategories = categories.filter(c=>!c.parent);
+const subCategories = categories.filter(c=>c.parent===mainCat);
+const childCategories = categories.filter(c=>c.parent===subCat);
 
-  const changeSizeQty = (vi, size, qty) => {
-    const arr = [...variants];
-    const s = arr[vi].sizes.find((x) => x.size === size);
-    if (s) s.quantity = Math.max(0, Number(qty) || 0);
-    setVariants(arr);
-  };
+/* SIZE DETECTOR */
 
-  const addVariant = () => setVariants([...variants, { ...emptyVariant }]);
-  const removeVariant = (vi) => setVariants(variants.filter((_, i) => i !== vi));
+const getSizeGroup = ()=>{
 
-  // ✅ VALIDATION
-  const validate = () => {
-    if (!name.trim()) return "Enter product name";
-    if (!childCat) return "Select final child category";
-    if (!price) return "Enter price";
-    if (!mainFiles.some(Boolean)) return "Add at least one main image";
+const categoryName = (childSlug || subSlug || mainSlug || "").toLowerCase();
 
-    for (const [i, v] of variants.entries()) {
-      if (!v.colorName.trim()) return `Enter color name for variant ${i + 1}`;
-      if (!v.sizes.length) return `Select at least one size for variant ${i + 1}`;
-    }
-    return null;
-  };
+if(categoryName.includes("shirt"))
+return SIZE_GROUPS.mens_shirt;
 
-  // ✅ SUBMIT
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    const err = validate();
-    if (err) return toast.error(err);
+if(categoryName.includes("pant") || categoryName.includes("trouser"))
+return SIZE_GROUPS.mens_pant;
 
-    setIsLoading(true);
-    try {
-      const productData = {
-        name,
-        description: description.split("\n").filter(Boolean),
-        category: childCat, // ✅ ONLY CHILD CATEGORY
-        price: Number(price),
-        offerPrice: offerPrice ? Number(offerPrice) : undefined,
-        variants: variants.map((v) => ({
-          colorName: v.colorName,
-          colorCode: v.colorCode,
-          pattern: v.pattern || "",
-          sizes: v.sizes,
-          images: v.images.filter(Boolean).map(() => "img"),
-        })),
-      };
+if(categoryName.includes("kurti"))
+return SIZE_GROUPS.womens_kurti;
 
-      const formData = new FormData();
-      formData.append("productData", JSON.stringify(productData));
+if(categoryName.includes("blouse"))
+return SIZE_GROUPS.womens_blouse;
 
-      mainFiles.forEach((f) => f && formData.append("images", f));
-      variants.forEach((v) =>
-        v.images.forEach((img) => img && formData.append("variantImages", img))
-      );
+if(categoryName.includes("saree"))
+return SIZE_GROUPS.saree;
 
-      const { data } = await axios.post("/api/product/add", formData);
+if(categoryName.includes("kid"))
+return SIZE_GROUPS.kids;
 
-      if (data.success) {
-        toast.success("Product added successfully");
-        setName("");
-        setDescription("");
-        setPrice("");
-        setOfferPrice("");
-        setMainFiles([null, null, null, null]);
-        setVariants([{ ...emptyVariant }]);
-        setMainCat("");
-        setSubCat("");
-        setChildCat("");
-      } else {
-        toast.error(data.message || "Add failed");
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Upload failed");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+return SIZE_GROUPS.mens_shirt;
 
-  // ✅ UI
-  return (
-    <div className="flex-1 px-6 py-8">
-      <form
-        onSubmit={onSubmit}
-        className="max-w-4xl mx-auto bg-white p-6 rounded shadow space-y-6"
-      >
-        <h2 className="text-2xl font-semibold">Add Product</h2>
+};
 
-        {/* ✅ BASIC */}
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Product Name" className="w-full border p-2 rounded" />
+/* AUTO LOAD SIZES */
 
-        {/* ✅ CATEGORY 3 LEVEL */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <select value={mainCat} onChange={(e) => setMainCat(e.target.value)} className="border p-2 rounded" required>
-            <option value="">Select Main</option>
-            {mainCats.map((c) => (
-              <option key={c._id} value={c._id}>{c.name || c.text}</option>
-            ))}
-          </select>
+useEffect(()=>{
 
-          <select value={subCat} onChange={(e) => setSubCat(e.target.value)} className="border p-2 rounded" disabled={!subCats.length}>
-            <option value="">Select Sub</option>
-            {subCats.map((c) => (
-              <option key={c._id} value={c._id}>{c.name || c.text}</option>
-            ))}
-          </select>
+const category = childSlug || subSlug || mainSlug;
 
-          <select value={childCat} onChange={(e) => setChildCat(e.target.value)} className="border p-2 rounded" disabled={!childCats.length} required>
-            <option value="">Select Child</option>
-            {childCats.map((c) => (
-              <option key={c._id} value={c.slug || c.path}>{c.name || c.text}</option>
-            ))}
-          </select>
-        </div>
+if(!category) return;
 
-        <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" className="w-full border p-3 rounded" />
+const sizes = getSizeGroup();
 
-        <div className="grid grid-cols-2 gap-4">
-          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" className="border p-2 rounded" />
-          <input type="number" value={offerPrice} onChange={(e) => setOfferPrice(e.target.value)} placeholder="Offer Price" className="border p-2 rounded" />
-        </div>
+setVariants([
+{
+colorName:"",
+colorCode:"#000000",
+pattern:"",
+sizes: sizes.map(size=>({
+size,
+quantity:0
+})),
+images:[]
+}
+]);
 
-        {/* ✅ MAIN IMAGES */}
-        <div className="grid grid-cols-4 gap-3">
-          {mainFiles.map((f, i) => (
-            <div key={i} className="border rounded relative">
-              <label className="block w-full h-28 cursor-pointer">
-                <input hidden type="file" accept="image/*" onChange={(e) => setMainFile(i, e.target.files?.[0])} />
-                {f ? <img src={filePreview(f)} className="w-full h-full object-cover" /> : <div className="flex items-center justify-center h-full text-gray-400">+ Add</div>}
-              </label>
-              {f && <button type="button" onClick={() => removeMainFile(i)} className="absolute top-1 right-1 bg-white p-1 rounded"><HiTrash /></button>}
-            </div>
-          ))}
-        </div>
+},[childSlug,subSlug,mainSlug]);
 
-        {/* ✅ VARIANTS */}
-        <div className="flex justify-between items-center">
-          <h3 className="font-semibold">Variants</h3>
-          <button type="button" onClick={addVariant} className="border px-3 py-1 rounded text-sm flex items-center gap-1"><HiPlus /> Add</button>
-        </div>
+/* ADD VARIANT */
 
-        {variants.map((v, vi) => (
-          <div key={vi} className="border p-4 rounded bg-gray-50 space-y-3">
-            <div className="grid grid-cols-3 gap-3">
-              <input value={v.colorName} onChange={(e) => updateVariant(vi, "colorName", e.target.value)} placeholder="Color Name" className="border p-2 rounded" />
-              <input type="color" value={v.colorCode} onChange={(e) => updateVariant(vi, "colorCode", e.target.value)} />
-              <input value={v.pattern} onChange={(e) => updateVariant(vi, "pattern", e.target.value)} placeholder="Pattern" className="border p-2 rounded" />
-            </div>
+const addVariant = ()=>{
 
-            <div className="grid grid-cols-6 gap-2">
-              {sizesList.map((sz) => {
-                const exists = v.sizes.some((s) => s.size === sz);
-                const qty = v.sizes.find((s) => s.size === sz)?.quantity || 0;
-                return (
-                  <div key={sz}>
-                    <button type="button" onClick={() => toggleSize(vi, sz)} className={`w-full border rounded ${exists ? "bg-black text-white" : ""}`}>{sz}</button>
-                    {exists && <input type="number" value={qty} onChange={(e) => changeSizeQty(vi, sz, e.target.value)} className="w-full border mt-1 text-center" />}
-                  </div>
-                );
-              })}
-            </div>
+const sizes = getSizeGroup();
 
-            {variants.length > 1 && <button type="button" onClick={() => removeVariant(vi)} className="text-red-500 text-sm">Remove Variant</button>}
-          </div>
-        ))}
+setVariants([
+...variants,
+{
+colorName:"",
+colorCode:"#000000",
+pattern:"",
+sizes: sizes.map(size=>({
+size,
+quantity:0
+})),
+images:[]
+}
+]);
 
-        <button type="submit" disabled={isLoading} className="bg-black text-white px-6 py-2 rounded">
-          {isLoading ? "Adding..." : "Add Product"}
-        </button>
-      </form>
-    </div>
-  );
+};
+
+/* IMAGE HANDLER */
+
+const handleImageSelect = (index,file)=>{
+
+const copy=[...images];
+copy[index]=file;
+setImages(copy);
+
+};
+
+/* SUBMIT */
+
+const handleSubmit = async()=>{
+
+try{
+
+if(!name || !price)
+return toast.error("Name & Price required");
+
+const category = childSlug || subSlug || mainSlug;
+
+if(!category)
+return toast.error("Select category");
+
+const productData = {
+
+name,
+
+description: description.split("\n").filter(Boolean),
+
+category,
+
+price:Number(price),
+
+offerPrice:offerPrice ? Number(offerPrice) : 0,
+
+variants: hasVariants ? variants : [],
+
+stock: hasVariants ? 0 : Number(stock)
+
+};
+
+const formData = new FormData();
+
+formData.append("productData",JSON.stringify(productData));
+
+images.forEach(img=>{
+if(img) formData.append("images",img);
+});
+
+const res = await axios.post("/api/product/add",formData);
+
+if(res.data.success){
+toast.success("Product Added");
+}else{
+toast.error(res.data.message);
+}
+
+}catch(err){
+toast.error(err.message);
+}
+
+};
+
+/* UI */
+
+return(
+
+<div className="p-10 bg-gray-50 min-h-screen">
+
+<h1 className="text-2xl font-semibold mb-6">Add Product</h1>
+
+<div className="bg-white p-6 rounded shadow space-y-6">
+
+<input
+className="border p-2 w-full rounded"
+placeholder="Product Name"
+value={name}
+onChange={e=>setName(e.target.value)}
+/>
+
+{/* CATEGORY */}
+
+<div className="grid grid-cols-3 gap-4">
+
+<select
+className="border p-2 rounded"
+value={mainCat}
+onChange={(e)=>{
+
+const selected = categories.find(c=>c._id===e.target.value);
+
+setMainCat(selected._id);
+setMainSlug(selected.slug);
+
+setSubCat("");
+setChildCat("");
+setSubSlug("");
+setChildSlug("");
+
+}}
+>
+
+<option value="">Select Main</option>
+
+{mainCategories.map(cat=>(
+<option key={cat._id} value={cat._id}>
+{cat.name}
+</option>
+))}
+
+</select>
+
+{subCategories.length>0 && (
+
+<select
+className="border p-2 rounded"
+value={subCat}
+onChange={(e)=>{
+
+const selected = categories.find(c=>c._id===e.target.value);
+
+setSubCat(selected._id);
+setSubSlug(selected.slug);
+
+setChildCat("");
+setChildSlug("");
+
+}}
+>
+
+<option value="">Select Sub</option>
+
+{subCategories.map(cat=>(
+<option key={cat._id} value={cat._id}>
+{cat.name}
+</option>
+))}
+
+</select>
+
+)}
+
+{childCategories.length>0 && (
+
+<select
+className="border p-2 rounded"
+value={childCat}
+onChange={(e)=>{
+
+const selected = categories.find(c=>c._id===e.target.value);
+
+setChildCat(selected._id);
+setChildSlug(selected.slug);
+
+}}
+>
+
+<option value="">Select Child</option>
+
+{childCategories.map(cat=>(
+<option key={cat._id} value={cat._id}>
+{cat.name}
+</option>
+))}
+
+</select>
+
+)}
+
+</div>
+
+<textarea
+className="border p-2 w-full rounded"
+placeholder="Description"
+value={description}
+onChange={e=>setDescription(e.target.value)}
+/>
+
+<div className="flex gap-4">
+
+<input
+className="border p-2 rounded w-full"
+placeholder="Price"
+value={price}
+onChange={e=>setPrice(e.target.value)}
+/>
+
+<input
+className="border p-2 rounded w-full"
+placeholder="Offer Price"
+value={offerPrice}
+onChange={e=>setOfferPrice(e.target.value)}
+/>
+
+</div>
+
+<div className="flex gap-6">
+
+<label>
+<input
+type="radio"
+checked={!hasVariants}
+onChange={()=>setHasVariants(false)}
+/>
+Simple Product
+</label>
+
+<label>
+<input
+type="radio"
+checked={hasVariants}
+onChange={()=>setHasVariants(true)}
+/>
+Variant Product
+</label>
+
+</div>
+
+{/* IMAGE UPLOAD */}
+
+<div className="grid grid-cols-4 gap-4">
+
+{[0,1,2,3].map((_,i)=>(
+
+<label
+key={i}
+className="border rounded h-28 flex items-center justify-center cursor-pointer bg-gray-50"
+>
+
+<input
+type="file"
+hidden
+accept="image/*"
+onChange={(e)=>handleImageSelect(i,e.target.files[0])}
+/>
+
+{images[i] ?
+
+<img
+src={URL.createObjectURL(images[i])}
+className="h-full w-full object-cover rounded"
+/>
+
+:
+
+<span className="text-gray-400 text-sm">+ Add</span>
+
+}
+
+</label>
+
+))}
+
+</div>
+
+{/* SIMPLE STOCK */}
+
+{!hasVariants && (
+
+<input
+className="border p-2 rounded w-full"
+placeholder="Stock Quantity"
+value={stock}
+onChange={e=>setStock(e.target.value)}
+/>
+
+)}
+
+{/* VARIANTS */}
+
+{hasVariants && (
+
+<div className="space-y-6">
+
+<h2 className="font-semibold text-lg">Variants</h2>
+
+{variants.map((v,index)=>(
+
+<div key={index} className="border p-4 rounded space-y-3">
+
+<input
+placeholder="Color Name"
+className="border p-2 w-full"
+value={v.colorName}
+onChange={(e)=>{
+
+const copy=[...variants];
+copy[index].colorName=e.target.value;
+setVariants(copy);
+
+}}
+/>
+
+<input
+type="color"
+value={v.colorCode}
+onChange={(e)=>{
+
+const copy=[...variants];
+copy[index].colorCode=e.target.value;
+setVariants(copy);
+
+}}
+/>
+
+<input
+placeholder="Pattern"
+className="border p-2 w-full"
+value={v.pattern}
+onChange={(e)=>{
+
+const copy=[...variants];
+copy[index].pattern=e.target.value;
+setVariants(copy);
+
+}}
+/>
+
+<div className="grid grid-cols-3 gap-3">
+
+{v.sizes.map((s,si)=>(
+
+<div key={si} className="flex gap-2 items-center">
+
+<span>{s.size}</span>
+
+<input
+type="number"
+className="border p-1 w-20"
+value={s.quantity}
+onChange={(e)=>{
+
+const copy=[...variants];
+copy[index].sizes[si].quantity=e.target.value;
+setVariants(copy);
+
+}}
+/>
+
+</div>
+
+))}
+
+</div>
+
+</div>
+
+))}
+
+<button
+onClick={addVariant}
+className="bg-blue-600 text-white px-4 py-2 rounded"
+>
+Add Variant
+</button>
+
+</div>
+
+)}
+
+<button
+onClick={handleSubmit}
+className="bg-green-600 text-white px-6 py-2 rounded"
+>
+Add Product
+</button>
+
+</div>
+
+</div>
+
+);
+
 }

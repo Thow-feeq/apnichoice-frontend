@@ -1,59 +1,36 @@
-import React from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
-import 'swiper/css';
-
-// Sample textile customer feedback icons
-import customer1 from '../assets/feedback_1.svg';
-import customer2 from '../assets/feedback_2.svg';
-import customer3 from '../assets/feedback_3.svg';
-import customer4 from '../assets/feedback_4.svg';
-import customer5 from '../assets/feedback_5.svg';
-import customer6 from '../assets/feedback_6.svg';
-
-const feedbacks = [
-  {
-    icon: customer1,
-    title: 'Ananya S',
-    description: 'Beautiful fabric and excellent stitching quality. Love the vibrant colors! 🌸',
-    rating: 5,
-  },
-  {
-    icon: customer2,
-    title: 'Raghav P',
-    description: 'Premium quality textiles at very reasonable prices. Will buy again!',
-    rating: 5,
-  },
-  {
-    icon: customer3,
-    title: 'Meera K',
-    description: 'Perfect for gifting. Soft, elegant, and exactly as shown in the pictures.',
-    rating: 5,
-  },
-  {
-    icon: customer4,
-    title: 'Arjun V',
-    description: 'Amazing patterns and textures. Truly a delight for textile lovers!',
-    rating: 5,
-  },
-  {
-    icon: customer5,
-    title: 'Sneha R',
-    description: 'The colors and prints are superb. Delivery was also very fast!',
-    rating: 5,
-  },
-  {
-    icon: customer6,
-    title: 'Karthik M',
-    description: 'High-quality fabric with intricate designs. Perfect for festive wear.',
-    rating: 5,
-  },
-];
+import React, { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
+import axios from "axios";
 
 const HappyCustomers = () => {
+
+  const [feedbacks, setFeedbacks] = useState([]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const fetchReviews = async () => {
+    try {
+
+      const res = await axios.get("http://localhost:4000/api/reviews");
+
+      if (res.data.success) {
+        setFeedbacks(res.data.reviews);
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 bg-gradient-to-b from-[#f8f3ed] to-white py-16 px-4 sm:px-6 lg:px-8">
+
       <div className="max-w-7xl mx-auto text-center">
+
         <h2 className="text-3xl md:text-4xl font-extrabold text-[#800000] mb-10">
           What Our Customers Say
         </h2>
@@ -62,51 +39,67 @@ const HappyCustomers = () => {
           modules={[Autoplay]}
           spaceBetween={24}
           slidesPerView={1}
-          loop={true}
+          loop
           autoplay={{
             delay: 3500,
-            disableOnInteraction: false,
+            disableOnInteraction: false
           }}
           breakpoints={{
             768: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 },
+            1024: { slidesPerView: 3 }
           }}
         >
-          {feedbacks.map((feedback, index) => (
-            <SwiperSlide key={index}>
+
+          {feedbacks.map((feedback) => (
+
+            <SwiperSlide key={feedback._id}>
+
               <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition p-6 flex flex-col h-full border-t-4 border-[#800000] relative">
-                
+
                 {/* Customer Info */}
                 <div className="flex items-center gap-4 mb-4">
+
                   <img
-                    src={feedback.icon}
-                    alt={`${feedback.title} feedback`}
+                    src={`http://localhost:4000${feedback.image}`}
+                    alt={feedback.name}
                     className="w-14 h-14 rounded-full object-cover border-2 border-[#800000]"
                   />
+
                   <div className="text-left">
-                    <h3 className="text-lg font-semibold text-[#4d0000]">{feedback.title}</h3>
+
+                    <h3 className="text-lg font-semibold text-[#4d0000]">
+                      {feedback.name}
+                    </h3>
+
                     <div className="text-yellow-400 text-sm mt-1">
+
                       {Array.from({ length: 5 }).map((_, i) => (
-                        <span key={i}>{i < feedback.rating ? '★' : '☆'}</span>
+                        <span key={i}>
+                          {i < feedback.rating ? "★" : "☆"}
+                        </span>
                       ))}
+
                     </div>
+
                   </div>
+
                 </div>
 
-                {/* Feedback Text */}
+                {/* Review Text */}
                 <p className="text-[#4d0000] text-sm mt-auto leading-relaxed">
-                  {feedback.description}
+                  {feedback.review}
                 </p>
 
-                {/* Optional textile tag */}
-                <span className="absolute top-3 right-3 bg-[#800000] text-white text-xs px-2 py-0.5 rounded-full shadow-md hidden group-hover:block">
-                  Textile Approved
-                </span>
               </div>
+
             </SwiperSlide>
+
           ))}
+
         </Swiper>
+
       </div>
+
     </section>
   );
 };

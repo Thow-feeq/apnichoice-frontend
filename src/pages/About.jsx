@@ -1,89 +1,179 @@
-import React from 'react';
-import { assets } from '../assets/assets';
+import React from "react";
+import { assets } from "../assets/assets";
 
 const About = () => {
   return (
-    <section className="mt-28 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 text-gray-800">
+    <section className="mt-28 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 space-y-24 text-gray-700">
 
-      {/* 🚀 Hero Section */}
-      <div className="text-center space-y-6">
-        <h1 className="text-5xl font-extrabold text-blue-700">
-          A Clearer Vision for a Brighter Tomorrow
-        </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          At OptiView, we believe that great vision transforms lives. We're here to provide more than eyewear — we offer clarity, confidence, and comfort through every lens.
-        </p>
-        <img
-          src={assets.optical_store}
-          alt="Hero"
-          className="w-full max-w-4xl mx-auto rounded-xl shadow-xl object-cover h-72 sm:h-96"
-        />
-      </div>
-
-      {/* 👓 Who We Are */}
+      {/* HERO SECTION */}
       <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div className="space-y-5">
-          <h2 className="text-3xl font-bold">Who We Are</h2>
-          <p className="text-lg leading-relaxed text-gray-600">
-            OptiView is a modern optical destination that blends the latest vision technology with timeless personal service. With years of experience in eye care and fashion-forward eyewear, we help customers feel confident and see clearly every day.
+
+        <div className="space-y-6">
+          <h1 className="text-5xl font-extrabold text-[#7b0f0f] leading-tight">
+            About Vasthraa Dhee Fashions
+          </h1>
+
+          <p className="text-lg text-gray-600 leading-relaxed">
+            Vasthraa Dhee Fashions is a modern textile destination created for
+            fashion lovers who appreciate quality fabrics, elegant designs, and
+            timeless craftsmanship. We bring together traditional textile
+            heritage and contemporary fashion to deliver clothing that
+            celebrates style, comfort, and individuality.
           </p>
+
+          <p className="text-gray-600">
+            From everyday wear to festive collections, our curated range of
+            fabrics and garments is designed to make every moment stylish and
+            memorable.
+          </p>
+
+          <button className="bg-[#7b0f0f] text-white px-6 py-3 rounded-lg shadow hover:bg-[#5c0b0b] transition">
+            Explore Collections
+          </button>
         </div>
+
         <img
           src={assets.banner_image}
-          alt="About Us"
-          className="rounded-lg shadow-lg object-cover w-full h-72"
+          alt="Fashion"
+          className="rounded-xl shadow-xl object-cover w-full h-96"
         />
+
       </div>
 
-      {/* 💡 Our Values */}
-      <div className="bg-blue-50 rounded-2xl p-10 shadow-md">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">Our Core Values</h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center text-gray-700">
-          <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-            <h3 className="text-lg font-semibold mb-2">Integrity</h3>
-            <p>Transparent pricing, ethical care, and honest advice.</p>
-          </div>
-          <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-            <h3 className="text-lg font-semibold mb-2">Innovation</h3>
-            <p>Modern tools, AI-based testing & lens crafting.</p>
-          </div>
-          <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-            <h3 className="text-lg font-semibold mb-2">Care</h3>
-            <p>We listen. We guide. We serve with empathy and patience.</p>
-          </div>
-          <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-            <h3 className="text-lg font-semibold mb-2">Style</h3>
-            <p>Trendy frames from global brands tailored to your look.</p>
-          </div>
+
+      {/* WHO WE ARE */}
+      <div className="grid md:grid-cols-2 gap-12 items-center">
+
+        <img
+          src={assets.optical_store}
+          alt="Textile Store"
+          className="rounded-xl shadow-lg object-cover w-full h-80"
+        />
+
+        <div className="space-y-5">
+          <h2 className="text-3xl font-bold text-[#7b0f0f]">
+            Who We Are
+          </h2>
+
+          <p className="text-lg leading-relaxed text-gray-600">
+            At Vasthraa Dhee Fashions, we believe clothing is more than fabric —
+            it is an expression of personality and culture. Our collections
+            combine premium materials, detailed craftsmanship, and fashionable
+            designs that cater to men, women, and kids.
+          </p>
+
+          <p className="text-gray-600">
+            Whether you are looking for elegant ethnic wear, modern casual
+            outfits, or comfortable everyday clothing, our goal is to bring
+            quality fashion directly to your doorstep through a seamless online
+            shopping experience.
+          </p>
         </div>
+
       </div>
 
-      {/* 🔍 Why Choose Us */}
-      <div className="text-center space-y-8">
-        <h2 className="text-3xl font-bold">What Sets Us Apart?</h2>
-        <div className="grid md:grid-cols-3 gap-8 text-left">
-          <div className="p-6 rounded-xl shadow hover:shadow-xl border">
-            <h4 className="font-semibold mb-2 text-blue-600">✅ Digital Eye Exams</h4>
-            <p>Next-gen testing equipment for accurate prescriptions.</p>
+
+      {/* WHY CHOOSE US */}
+      <div className="bg-[#fff5f5] rounded-2xl p-10 shadow-md">
+
+        <h2 className="text-3xl font-bold text-center text-[#7b0f0f] mb-10">
+          Why Choose Vasthraa Dhee?
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-8">
+
+          <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+            <h4 className="font-semibold text-lg text-[#7b0f0f] mb-2">
+              Premium Fabrics
+            </h4>
+            <p className="text-gray-600">
+              Carefully sourced materials ensuring comfort, durability, and
+              luxurious feel.
+            </p>
           </div>
-          <div className="p-6 rounded-xl shadow hover:shadow-xl border">
-            <h4 className="font-semibold mb-2 text-blue-600">🕶 Curated Eyewear</h4>
-            <p>Collections from Ray-Ban, Oakley, Prada, and more.</p>
+
+          <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+            <h4 className="font-semibold text-lg text-[#7b0f0f] mb-2">
+              Trendy Designs
+            </h4>
+            <p className="text-gray-600">
+              Stylish collections inspired by modern fashion and traditional
+              textile heritage.
+            </p>
           </div>
-          <div className="p-6 rounded-xl shadow hover:shadow-xl border">
-            <h4 className="font-semibold mb-2 text-blue-600">🧑‍⚕️ Optician-Led Team</h4>
-            <p>Real humans guiding you to the right fit, always.</p>
+
+          <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+            <h4 className="font-semibold text-lg text-[#7b0f0f] mb-2">
+              Affordable Pricing
+            </h4>
+            <p className="text-gray-600">
+              High-quality fashion at prices designed to suit every wardrobe.
+            </p>
           </div>
+
         </div>
+
       </div>
 
-      {/* 📞 Call to Action */}
-      <div className="text-center mt-16 bg-gradient-to-r from-blue-600 to-blue-400 text-white py-10 px-6 rounded-xl shadow-lg">
-        <h3 className="text-2xl sm:text-3xl font-semibold mb-4">Book Your Free Eye Checkup Today!</h3>
-        <p className="mb-6 text-lg">Walk-in or schedule online — your journey to better vision starts now.</p>
-        <button className="bg-white text-blue-600 font-semibold px-6 py-3 rounded-lg shadow hover:scale-105 transition">
-          Schedule Appointment
+
+      {/* OUR VALUES */}
+      <div className="text-center space-y-10">
+
+        <h2 className="text-3xl font-bold text-[#7b0f0f]">
+          Our Values
+        </h2>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+          <div className="p-6 rounded-xl border shadow hover:shadow-lg">
+            <h3 className="font-semibold text-lg mb-2">Quality</h3>
+            <p className="text-gray-600">
+              Every product reflects our commitment to superior fabric quality.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border shadow hover:shadow-lg">
+            <h3 className="font-semibold text-lg mb-2">Craftsmanship</h3>
+            <p className="text-gray-600">
+              Designs crafted with attention to detail and textile excellence.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border shadow hover:shadow-lg">
+            <h3 className="font-semibold text-lg mb-2">Customer First</h3>
+            <p className="text-gray-600">
+              Your satisfaction and style needs are always our priority.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-xl border shadow hover:shadow-lg">
+            <h3 className="font-semibold text-lg mb-2">Innovation</h3>
+            <p className="text-gray-600">
+              Combining traditional textile culture with modern fashion trends.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      {/* CTA SECTION */}
+      <div className="text-center bg-[#7b0f0f] text-white py-12 px-6 rounded-2xl shadow-lg">
+
+        <h3 className="text-3xl font-bold mb-4">
+          Discover Fashion That Defines You
+        </h3>
+
+        <p className="mb-6 text-lg">
+          Explore our latest textile collections and experience the elegance of
+          Vasthraa Dhee Fashions.
+        </p>
+
+        <button className="bg-white text-[#7b0f0f] font-semibold px-6 py-3 rounded-lg shadow hover:scale-105 transition">
+          Shop Now
         </button>
+
       </div>
 
     </section>

@@ -49,7 +49,7 @@ const AddCategory = () => {
         toast.error(res.data.message);
       }
     } catch (err) {
-      toast.error("Delete failed");
+      toast.error(err.response?.data?.message || "Delete failed");
     }
   };
 
@@ -60,11 +60,10 @@ const AddCategory = () => {
     return (
       <div style={{ marginLeft: depth * 20 }}>
         <div
-          className={`flex items-center justify-between py-2 px-3 rounded-lg transition ${
-            selected?._id === node._id
+          className={`flex items-center justify-between py-2 px-3 rounded-lg transition ${selected?._id === node._id
               ? "bg-blue-50 border border-blue-200"
               : "hover:bg-gray-100"
-          }`}
+            }`}
         >
           <div
             className="flex items-center gap-2 cursor-pointer"
@@ -160,7 +159,7 @@ const AddCategory = () => {
         <h2 className="text-2xl font-bold mb-4">Add Category</h2>
 
         <div className="mb-4 p-3 bg-green-50 border rounded">
-         {selected ? selected.path || selected.name : "Root"}
+          {selected ? selected.path || selected.name : "Root"}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -179,12 +178,12 @@ const AddCategory = () => {
             className="border rounded px-4 py-2 w-full bg-gray-100"
           />
 
-          <input
+          {/* <input
             type="color"
             value={bgColor}
             onChange={(e) => setBgColor(e.target.value)}
             className="w-full h-10 rounded"
-          />
+          /> */}
 
           <input
             type="file"

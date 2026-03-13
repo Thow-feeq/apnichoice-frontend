@@ -159,7 +159,7 @@ export const footerLinks = [
       { text: "About Us", url: "/about" },
       { text: "Products", url: "/products" },
       { text: "Contact", url: "/contact" },
-      { text: "FAQs", url: "#" },
+      // { text: "FAQs", url: "#" },
     ],
   },
   {
@@ -168,7 +168,7 @@ export const footerLinks = [
       { text: "Delivery Information", url: "/delivery-info" },
       { text: "Return & Refund Policy", url: "/return-refund-policy" },
       { text: "Payment Methods", url: "/payment-methods" },
-      { text: "Track your Order", url: "/track-order" },
+      // { text: "Track your Order", url: "/track-order" },
       { text: "Contact Us", url: "/contact" },
     ],
   },

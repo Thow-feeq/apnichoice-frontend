@@ -10,13 +10,16 @@ const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const sidebarLinks = [
-    { name: "Dashboard", path: "/admin/dashboard", icon: assets.dashboard_icon },
+    { name: "📊 CMS Dashboard", path: "/admin/cms-dashboard", icon: assets.dashboard_icon },
+    // { name: "Dashboard", path: "/admin/dashboard", icon: assets.dashboard_icon },
     { name: "Add Product", path: "/admin/add-product", icon: assets.add_icon },
-    { name: "Product List", path: "/admin/product-list", icon: assets.product_list_icon },
+    { name: "📦 Products", path: "/admin/product-list", icon: assets.product_list_icon },
     { name: "Add Category", path: "/admin/add-category", icon: assets.add_icon },
-    { name: "Category List", path: "/admin/category-list", icon: assets.product_list_icon },
+    { name: "🏷️ Categories", path: "/admin/category-list", icon: assets.product_list_icon },
     { name: "Orders", path: "/admin/orders", icon: assets.order_icon },
     { name: "Sales Report", path: "/admin/sales-report", icon: assets.order_icon },
+    { name: "Homepage Banners", path: "/admin/banners", icon: assets.dashboard_icon },
+    { name: "Customer Reviews", path: "/admin/reviews", icon: assets.dashboard_icon },
     { name: "Create Coupon", path: "/admin/create-coupon", icon: assets.create_coupon },
     { name: "User Lists", path: "/admin/UserList", icon: assets.user_list },
     { name: "Coupon List", path: "/admin/coupons", icon: assets.coupon_list },
@@ -92,10 +95,8 @@ const AdminLayout = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 bg-gray-50 overflow-y-auto px-4 py-6 md:px-8 md:py-8 h-full">
-          <div className="min-h-[calc(100vh-60px)] rounded-xl bg-white shadow p-4 md:p-6">
-            <Outlet />
-          </div>
+        <main className="flex-1 bg-gray-50 overflow-y-auto h-full">
+          <Outlet />
         </main>
       </div>
     </>

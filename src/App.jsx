@@ -8,7 +8,7 @@ import { Toaster } from "react-hot-toast";
 // Pages
 import Home from './pages/Home';
 import AllProducts from './pages/AllProducts';
-import ProductCategory from './pages/ProductCategory';
+// import ProductCategory from './pages/ProductCategory'; // no longer needed
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
 import AddAddress from './pages/AddAddress';
@@ -34,10 +34,16 @@ import SubscriberList from './pages/admin/SubscriberList';
 import AdminLogin from './components/admin/adminLogin';
 import EditCategory from './pages/admin/EditCategory';
 import SalesReport from './pages/admin/SalesReport';
+import CMSDashboard from './pages/admin/CMSDashboard';
+import ProductListCMS from './pages/admin/ProductListCMS';
+import CategoryListCMS from './pages/admin/CategoryListCMS';
 import DeliveryInfo from './pages/DeliveryInfo';
 import PaymentMethods from './pages/PaymentMethods';
 import ReturnRefundPolicy from './pages/ReturnRefundPolicy';
 import TrackOrder from './pages/TrackyourOrder';
+import Invoice from './pages/Invoice';
+import Banners from './pages/admin/Banners';
+import Reviews from './pages/admin/Reviews';
 
 const App = () => {
   const location = useLocation();
@@ -54,16 +60,18 @@ const App = () => {
         <Routes>
           {/* Public Routes */}
           <Route path='/' element={<Home />} />
-          <Route path='/products' element={<AllProducts />} />
-          <Route path='/products/:category' element={<ProductCategory />} />
+          {/* consolidated product listing; :category is optional */}
+          <Route path='/products/:category?' element={<AllProducts />} />
           <Route path='/products/:category/:id' element={<ProductDetails />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/add-address' element={<AddAddress />} />
           <Route path='/my-orders' element={<MyOrders />} />
+          <Route path="/invoice/:id" element={<Invoice />} />
           <Route path='/loader' element={<Loading />} />
           <Route path='/contact' element={<Contact />} />
           <Route path='/about' element={<About />} />
           <Route path='/login' element={<Login />} />
+
 
           {/* New Pages */}
           <Route path='/delivery-info' element={<DeliveryInfo />} />
@@ -74,9 +82,10 @@ const App = () => {
           {/* Seller Routes */}
           {/* Seller Routes */}
           <Route path='/admin' element={isSeller ? <AdminLayout /> : <AdminLogin />}>
+            <Route path='cms-dashboard' element={<CMSDashboard />} />
             <Route path='add-product' index element={<AddProduct />} />
-            <Route path='product-list' element={<ProductList />} />
-            <Route path='category-list' element={<CategoryList />} />
+            <Route path='product-list' element={<ProductListCMS />} />
+            <Route path='category-list' element={<CategoryListCMS />} />
             <Route path='add-category' element={<AddCategory />} />
 
             {/* ✅ THIS IS THE MISSING ROUTE */}
@@ -91,6 +100,9 @@ const App = () => {
             <Route path='login' element={<AdminLogin />} />
             <Route path='dashboard' element={<AdminDashboard />} />
             <Route path='sales-report' element={<SalesReport />} />
+            <Route path="/admin/banners" element={<Banners />} />
+            <Route path="reviews" element={<Reviews />} />
+
           </Route>
         </Routes>
       </div>

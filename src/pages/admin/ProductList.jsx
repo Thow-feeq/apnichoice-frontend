@@ -202,16 +202,7 @@ const ProductList = () => {
 
                   {/* Stock Toggle */}
                   <td className="px-6 py-4">
-                    <label className="inline-flex relative items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={fabric.inStock}
-                        onChange={() => toggleStock(fabric._id, !fabric.inStock)}
-                      />
-                      <div className="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors shadow-inner" />
-                      <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow peer-checked:translate-x-5 transition-transform" />
-                    </label>
+                    {fabric.stock ?? 0}
                   </td>
 
                   {/* Actions */}

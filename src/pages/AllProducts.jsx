@@ -1,155 +1,328 @@
-import React, { useEffect, useState } from 'react';
-import { useAppContext } from '../context/AppContext';
-import ProductCard from '../components/ProductCard';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { useAppContext } from "../context/AppContext";
+import ProductCard from "../components/ProductCard";
+import ShopByCategory from "../components/ShopByCategory";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 
 const AllProducts = () => {
-  const { category } = useParams();
-  const { products, searchQuery } = useAppContext();
 
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const { category } = useParams();
+  const { products, searchQuery, setSearchQuery } = useAppContext();
+
   const [categories, setCategories] = useState([]);
-  const [showMobileCategories, setShowMobileCategories] = useState(false);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [sortOption, setSortOption] = useState("");
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data } = await axios.get('/api/seller/category/list');
-        if (data.success) {
-          setCategories(data.categories);
-        }
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-      }
-    };
-    fetchCategories();
-  }, []);
+  /* ================= FETCH CATEGORY TREE ================= */
 
   useEffect(() => {
-    let filtered = products;
+
+    const loadCategories = async () => {
+
+      try {
+
+        const { data } = await axios.get("/api/seller/category/tree");
+
+        if (data.success) {
+
+          setCategories(data.categories);
+
+        }
+
+      } catch {
+
+        console.log("Category load failed");
+
+      }
+
+    }
+
+    loadCategories()
+
+  }, [])
+
+  /* ================= FIND CATEGORY ================= */
+
+  const findCategory = (nodes, slug) => {
+
+    for (const node of nodes) {
+
+      const nodeSlug = (node.slug || node.path || node.name).toLowerCase()
+
+      if (nodeSlug === slug) return node
+
+      if (node.children?.length) {
+
+        const found = findCategory(node.children, slug)
+
+        if (found) return found
+
+      }
+
+    }
+
+    return null
+
+  }
+
+  /* ================= GET ALL CHILD SLUGS ================= */
+
+  const getChildSlugs = (node) => {
+
+    let list = [(node.slug || node.path || node.name).toLowerCase()]
+
+    if (node.children?.length) {
+
+      node.children.forEach(child => {
+
+        list = list.concat(getChildSlugs(child))
+
+      })
+
+    }
+
+    return list
+
+  }
+
+  /* ================= PRODUCT FILTER ================= */
+
+  useEffect(() => {
+
+    let filtered = [...products]
 
     if (category) {
-      filtered = filtered.filter(
-        (product) => product.category.toLowerCase() === category.toLowerCase()
-      );
+
+      const slug = category.toLowerCase()
+
+      const selected = findCategory(categories, slug)
+
+      let allowed = [slug]
+
+      if (selected) {
+
+        allowed = getChildSlugs(selected)
+
+      }
+
+      filtered = filtered.filter(p => {
+
+        const cat = p.category?.toLowerCase()
+
+        return allowed.includes(cat)
+
+      })
+
     }
 
-    if (searchQuery.trim().length > 0) {
-      filtered = filtered.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+    if (searchQuery.trim()) {
+
+      filtered = filtered.filter(p =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+
     }
 
-    setFilteredProducts(filtered);
-  }, [products, searchQuery, category]);
+    if (sortOption === "price-low") {
 
-  const handleCategoryClick = (cat) => {
-    if (category === cat.path) {
-      navigate('/products');
-    } else {
-      navigate(`/products/${cat.path}`);
+      filtered.sort((a, b) => a.offerPrice - b.offerPrice)
+
     }
-    setShowMobileCategories(false); // auto-close on mobile
-  };
+
+    if (sortOption === "price-high") {
+
+      filtered.sort((a, b) => b.offerPrice - a.offerPrice)
+
+    }
+
+    setFilteredProducts(filtered)
+
+  }, [products, category, searchQuery, sortOption, categories])
+
+  /* ================= CLICK CATEGORY ================= */
+
+  const goCategory = (cat) => {
+
+    const slug = (cat.slug || cat.path || cat.name).toLowerCase()
+
+    navigate(`/products/${slug}`)
+
+  }
+
+  /* ================= SIDEBAR TREE ================= */
+
+  const CategoryNode = ({ node, depth = 0 }) => {
+
+    const [open, setOpen] = useState(false)
+
+    const slug = (node.slug || node.path || node.name).toLowerCase()
+
+    const hasChildren = node.children?.length > 0
+
+    const handleClick = () => {
+
+      if (hasChildren) {
+
+        setOpen(!open)
+
+      } else {
+
+        navigate(`/products/${slug}`)
+
+      }
+
+    }
+
+    return (
+
+      <div>
+
+        <button
+          onClick={handleClick}
+          className="w-full text-left px-3 py-2 rounded-md flex justify-between items-center hover:bg-gray-100"
+          style={{ paddingLeft: depth * 16 }}
+        >
+
+          {node.name}
+
+          {hasChildren && (
+            <span>{open ? "▾" : "›"}</span>
+          )}
+
+        </button>
+
+        {open && hasChildren &&
+
+          node.children.map(child => (
+            <CategoryNode
+              key={child._id}
+              node={child}
+              depth={depth + 1}
+            />
+          ))
+
+        }
+
+      </div>
+
+    )
+
+  }
+
+  /* ================= UI ================= */
 
   return (
-    <section className="relative w-full mt-20 max-w-screen-2xl mx-auto px-4">
-      {/* ✅ Mobile: Category Dropdown Toggle */}
-      <div className="md:hidden mb-4">
-        <button
-          onClick={() => setShowMobileCategories((prev) => !prev)}
-          className="w-full flex justify-between items-center px-4 py-2 bg-primary text-white rounded-md"
-        >
-          Categories
-          {showMobileCategories ? <FaChevronUp /> : <FaChevronDown />}
-        </button>
-        {showMobileCategories && (
-          <div className="bg-white border rounded-md shadow-sm mt-2 p-4 space-y-3">
-            {categories.map((cat) => (
-              <button
-                key={cat._id}
-                onClick={() => handleNavigate(cat.path || cat.slug)}
-                className="relative flex-shrink-0 w-44 h-60 rounded-2xl overflow-hidden shadow-lg group"
-                style={{ backgroundColor: cat.bgColor || "#e5d3d0" }}
-              >
-                {/* ✅ CATEGORY IMAGE */}
-                <img
-                  src={
-                    cat.image?.startsWith("http")
-                      ? cat.image
-                      : `${import.meta.env.VITE_BACKEND_URL}${cat.image}`
-                  }
-                  alt={cat.text}
-                  className="absolute inset-0 w-full h-full object-cover z-10"
-                  onError={(e) => (e.target.style.display = "none")}
-                />
 
-                {/* ✅ DARK OVERLAY */}
-                <div className="absolute inset-0 bg-black/40 z-20" />
+    <section className="w-full mt-20 max-w-[1600px] mx-auto px-4">
 
-                {/* ✅ CATEGORY NAME */}
-                <span className="absolute bottom-4 left-4 z-30 text-white font-semibold text-lg">
-                  {cat.text}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      <ShopByCategory />
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* ✅ Sidebar (Desktop only) */}
-        <aside className="hidden md:flex flex-col w-64 bg-white shadow-md rounded-lg sticky top-24 h-fit max-h-[80vh] overflow-y-auto p-6">
-          <h2 className="text-xl font-semibold mb-6 text-gray-900 border-b border-gray-200 pb-2">
+      <div className="flex gap-8 mt-8">
+
+        {/* SIDEBAR */}
+
+        <aside className="w-64 hidden md:block bg-white border rounded-lg p-6 h-fit sticky top-24">
+
+          <h2 className="text-lg font-semibold mb-6">
             Categories
           </h2>
-          <ul className="flex flex-col space-y-3">
-            {categories.map((cat) => {
-              const isSelected = category === cat.path;
-              return (
-                <li key={cat._id}>
-                  <button
-                    onClick={() => handleCategoryClick(cat)}
-                    className={`w-full text-left flex items-center gap-3 p-2 rounded-md transition
-                      ${isSelected
-                        ? 'bg-primary text-white font-semibold'
-                        : 'text-gray-700 hover:bg-primary/10 hover:text-primary'
-                      }`}
-                  >
-                    <span
-                      className="w-4 h-4 rounded-full border border-gray-300"
-                      style={{ backgroundColor: cat.bgColor }}
-                    />
-                    <span className="truncate">{cat.text}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+
+          <button
+            onClick={() => navigate("/products")}
+            className={`w-full text-left px-3 py-2 rounded-md mb-3
+  ${!category ? "bg-green-600 text-white" : "hover:bg-gray-100"}`}
+          >
+            All Items
+          </button>
+
+          {categories.map(cat => (
+            <CategoryNode key={cat._id} node={cat} />
+          ))}
+
         </aside>
 
-        {/* ✅ Product Grid */}
+        {/* PRODUCTS */}
+
         <main className="flex-1">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-900">All Products</h1>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+
+            <div>
+
+              <p className="text-sm text-gray-500">
+
+                <span
+                  onClick={() => navigate("/products")}
+                  className="cursor-pointer hover:text-green-600"
+                >
+                  All Categories
+                </span>
+
+                {category && <> / {category}</>}
+
+              </p>
+
+              <h1 className="text-2xl font-bold mt-1">
+                {category ? category : "All Products"}
+              </h1>
+
+            </div>
+
+            <div className="flex gap-3">
+
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="border px-3 py-2 rounded-md w-56"
+              />
+
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                className="border px-3 py-2 rounded-md"
+              >
+
+                <option value="">Sort</option>
+                <option value="price-low">Price Low → High</option>
+                <option value="price-high">Price High → Low</option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+          {/* PRODUCTS */}
 
           {filteredProducts.length === 0 ? (
-            <p className="text-gray-500 mt-8">No products found.</p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-              {filteredProducts.map((product) => (
-                <div key={product._id} className="flex justify-center">
-                  <ProductCard product={product} />
-                </div>
-              ))}
-            </div>
-          )}
-        </main>
-      </div>
-    </section>
-  );
-};
 
-export default AllProducts;
+            <p className="text-gray-500">No products found</p>
+
+          ) : (
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+
+              {filteredProducts.map(product => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+
+            </div>
+
+          )}
+
+        </main>
+
+      </div>
+
+    </section>
+
+  )
+
+}
+
+export default AllProducts

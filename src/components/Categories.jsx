@@ -15,11 +15,18 @@ export default function ShopByCategoryPicker() {
     });
   }, [axios]);
 
-  useEffect(() => {
-    if (level3) {
-      navigate(`/products/${level3.slug || level3.path}`);
-    }
-  }, [level3, navigate]);
+  // whenever the user selects a category at any level we can redirect immediately
+  const goToCategory = (cat) => {
+    if (!cat) return;
+    navigate(`/products/${cat.slug || cat.path}`);
+  };
+
+  // legacy effect is no longer needed since we navigate inline
+  // useEffect(() => {
+  //   if (level3) {
+  //     navigate(`/products/${level3.slug || level3.path}`);
+  //   }
+  // }, [level3, navigate]);
 
   return (
     <section className="relative w-screen left-1/2 right-1/2 -translate-x-1/2 mt-20 py-20 bg-gradient-to-br from-[#fff7f7] via-[#f5f7ff] to-[#fff]">
@@ -46,6 +53,7 @@ export default function ShopByCategoryPicker() {
                     setLevel1(c);
                     setLevel2(null);
                     setLevel3(null);
+                    goToCategory(c); // redirect to products page for top‑level category
                   }}
                   className={`relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300
         ${level1?._id === c._id ? "ring-4 ring-indigo-500 scale-[1.02]" : ""}
@@ -80,6 +88,7 @@ export default function ShopByCategoryPicker() {
                   onClick={() => {
                     setLevel2(c);
                     setLevel3(null);
+                    goToCategory(c); // also navigate when second level is chosen
                   }}
                   className={`relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300
         ${level2?._id === c._id ? "ring-4 ring-indigo-500 scale-[1.02]" : ""}
@@ -114,7 +123,10 @@ export default function ShopByCategoryPicker() {
               {level2?.children?.map((c) => (
                 <div
                   key={c._id}
-                  onClick={() => setLevel3(c)}
+                  onClick={() => {
+                    setLevel3(c);
+                    goToCategory(c); // final level still navigates as before
+                  }}
                   className={`relative rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300
         ${level3?._id === c._id ? "ring-4 ring-indigo-500 scale-[1.02]" : ""}
       `}

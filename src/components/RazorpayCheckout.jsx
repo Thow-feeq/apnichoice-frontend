@@ -17,7 +17,7 @@ const RazorpayCheckout = ({ amount, selectedAddress, user, cartArray, couponCode
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
         currency: order.currency,
-        name: "Apni Choice",
+        name: "Vasthra Dhee Fashion",
         description: "Order Payment",
         order_id: order.id,
         handler: async function (response) {

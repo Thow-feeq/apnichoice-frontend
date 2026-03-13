@@ -12,13 +12,20 @@ export default function EditProduct() {
   const sizesList = ["S", "M", "L", "XL", "XXL", "XXXL"];
 
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   // ---------- FORM STATE ----------
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
-  const [offerPrice, setOfferPrice] = useState("");
+  const [price, setPrice] = useState(0);
+  const [offerPrice, setOfferPrice] = useState(0);
+  const [mainCats, setMainCats] = useState([]);
+  const [subCats, setSubCats] = useState([]);
+  const [childCats, setChildCats] = useState([]);
+  const [mainCat, setMainCat] = useState("");
+  const [subCat, setSubCat] = useState("");
+  const [childCat, setChildCat] = useState("");
 
   // main images
   const [mainFiles, setMainFiles] = useState([null, null, null, null]);
@@ -30,6 +37,20 @@ export default function EditProduct() {
   // store existing variant images (urls)
   const [existingVariantImages, setExistingVariantImages] = useState([]);
 
+  // ---------- FETCH CATEGORIES ----------
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await axios.get("/api/seller/category/tree");
+        if (data.success) {
+          setMainCats(data.categories || []);
+        }
+      } catch (err) {
+        console.log("Category fetch error:", err);
+      }
+    })();
+  }, []);
+
   // ---------- FETCH PRODUCT ----------
   useEffect(() => {
     (async () => {
@@ -40,28 +61,28 @@ export default function EditProduct() {
         const p = data.product;
 
         setName(p.name);
-        setDescription(p.description.join("\n"));
-        setCategory(p.category);
-        setPrice(p.price);
-        setOfferPrice(p.offerPrice || "");
+        setDescription(p.description?.join("\n") || "");
+        setCategory(p.category || "");
+        setPrice(p.price || 0);
+        setOfferPrice(p.offerPrice || 0);
 
         // main images
-        setExistingMainImages(p.images);
+        setExistingMainImages(p.images || []);
 
         // variants load
         setVariants(
-          p.variants.map((v, index) => ({
+          (p.variants || []).map((v) => ({
             colorName: v.colorName,
             colorCode: v.colorCode,
             pattern: v.pattern,
-            sizes: v.sizes,
+            sizes: v.sizes || [],
             images: [null, null, null], // new uploads
           }))
         );
 
         // variant existing images
         setExistingVariantImages(
-          p.variants.map((v) => v.images || [])
+          (p.variants || []).map((v) => v.images || [])
         );
 
       } catch (err) {
@@ -70,7 +91,7 @@ export default function EditProduct() {
       }
       setLoading(false);
     })();
-  }, [id]);
+  }, [id, axios]);
 
   // ---------- HELPERS ----------
   const filePreview = (file) =>
@@ -134,49 +155,88 @@ export default function EditProduct() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
+    // Validation
+    if (!name.trim()) {
+      return toast.error("Product name is required");
+    }
+    if (!price || price <= 0) {
+      return toast.error("Price must be greater than 0");
+    }
+
     try {
+      setSubmitting(true);
+
+      // clean variants - send actual count of NEW images being uploaded
+      const cleanedVariants = variants.map((v, index) => {
+        const newImageCount = v.images.filter((img) => img !== null).length;
+        return {
+          colorName: v.colorName || "Default",
+          colorCode: v.colorCode || "#ef4444",
+          pattern: v.pattern || "",
+          sizes: v.sizes || [],
+          existingImages: existingVariantImages[index] || [],
+          newImageCount: newImageCount  // Send actual count of new images
+        };
+      });
+
       const productData = {
-        name,
+        name: name.trim(),
         description: description.split("\n").filter(Boolean),
-        category,
         price: Number(price),
-        offerPrice: offerPrice ? Number(offerPrice) : undefined,
-        variants: variants.map((v) => ({
-          colorName: v.colorName,
-          colorCode: v.colorCode,
-          pattern: v.pattern,
-          sizes: v.sizes,
-          images: v.images.map(() => 1), // placeholder count
-        })),
+        offerPrice: Number(offerPrice) || 0,
+        existingMainImages,
+        variants: cleanedVariants
       };
+
+      if (category) {
+        productData.category = category;
+      }
 
       const formData = new FormData();
       formData.append("productData", JSON.stringify(productData));
 
-      // main images (new uploads)
-      mainFiles.forEach((f) => {
-        if (f) formData.append("images", f);
+      // new main images - only upload actual files
+      mainFiles.forEach((file) => {
+        if (file && file instanceof File) {
+          formData.append("images", file);
+        }
       });
 
-      // variant images flatten order
-      variants.forEach((v) => {
-        v.images.forEach((img) => {
-          if (img) formData.append("variantImages", img);
+      // new variant images - only upload actual files
+      variants.forEach((variant) => {
+        variant.images.forEach((img) => {
+          if (img && img instanceof File) {
+            formData.append("variantImages", img);
+          }
         });
       });
 
-      const { data } = await axios.put(`/api/product/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const { data } = await axios.put(
+        `/api/product/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
 
       if (data.success) {
-        toast.success("Product updated");
+        toast.success("Product updated successfully");
         fetchProducts();
         navigate("/admin/product-list");
-      } else toast.error(data.message);
-    } catch (err) {
-      console.log(err);
-      toast.error("Update failed");
+      } else {
+        toast.error(data.message || "Update failed");
+      }
+
+    } catch (error) {
+      console.error("UPDATE ERROR:", error);
+      toast.error(
+        error?.response?.data?.message ||
+        "Product update failed"
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -207,18 +267,33 @@ export default function EditProduct() {
         />
 
         <div className="grid grid-cols-2 gap-4">
-          <input
-            className="border p-3 rounded"
+          <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            placeholder="Category"
-          />
+            className="border p-3 rounded"
+          >
+            <option value="">Select Category</option>
+            {mainCats.map((cat) => (
+              <optgroup key={cat._id} label={cat.name}>
+                {cat.children?.map((subCat) => (
+                  <optgroup key={subCat._id} label={`  ${subCat.name}`}>
+                    {subCat.children?.map((childCat) => (
+                      <option key={childCat._id} value={childCat.slug}>
+                        {childCat.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </optgroup>
+            ))}
+          </select>
           <input
             className="border p-3 rounded"
             type="number"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) => setPrice(e.target.value ? Number(e.target.value) : 0)}
             placeholder="Price"
+            required
           />
         </div>
 
@@ -226,7 +301,7 @@ export default function EditProduct() {
           type="number"
           className="border p-3 rounded w-full"
           value={offerPrice}
-          onChange={(e) => setOfferPrice(e.target.value)}
+          onChange={(e) => setOfferPrice(e.target.value ? Number(e.target.value) : 0)}
           placeholder="Offer Price"
         />
 
@@ -337,9 +412,8 @@ export default function EditProduct() {
                       <button
                         key={sz}
                         type="button"
-                        className={`px-3 py-1 rounded border ${
-                          selected ? "bg-primary text-white" : "bg-white"
-                        }`}
+                        className={`px-3 py-1 rounded border ${selected ? "bg-primary text-white" : "bg-white"
+                          }`}
                         onClick={() => toggleSize(vi, sz)}
                       >
                         {sz}
@@ -378,8 +452,12 @@ export default function EditProduct() {
           ))}
         </div>
 
-        <button className="bg-primary text-white px-6 py-2 rounded mt-6">
-          Save Changes
+        <button 
+          type="submit" 
+          disabled={submitting}
+          className="bg-primary text-white px-6 py-2 rounded mt-6 disabled:opacity-50"
+        >
+          {submitting ? "Saving..." : "Save Changes"}
         </button>
       </form>
     </div>
