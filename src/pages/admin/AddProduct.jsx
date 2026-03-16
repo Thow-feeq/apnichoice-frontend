@@ -215,7 +215,9 @@ toast.error(err.message);
 
 /* UI */
 
-return(
+/* UI */
+
+return (
 
 <div className="p-10 bg-gray-50 min-h-screen">
 
@@ -223,14 +225,28 @@ return(
 
 <div className="bg-white p-6 rounded shadow space-y-6">
 
+{/* PRODUCT NAME */}
+
+<div className="space-y-1">
+<label className="text-sm font-medium text-gray-700">
+Product Name
+</label>
+
 <input
 className="border p-2 w-full rounded"
-placeholder="Product Name"
 value={name}
 onChange={e=>setName(e.target.value)}
 />
+</div>
+
 
 {/* CATEGORY */}
+
+<div className="space-y-1">
+
+<label className="text-sm font-medium text-gray-700">
+Category
+</label>
 
 <div className="grid grid-cols-3 gap-4">
 
@@ -252,7 +268,7 @@ setChildSlug("");
 }}
 >
 
-<option value="">Select Main</option>
+<option value="">Select Main Category</option>
 
 {mainCategories.map(cat=>(
 <option key={cat._id} value={cat._id}>
@@ -261,6 +277,7 @@ setChildSlug("");
 ))}
 
 </select>
+
 
 {subCategories.length>0 && (
 
@@ -280,7 +297,7 @@ setChildSlug("");
 }}
 >
 
-<option value="">Select Sub</option>
+<option value="">Select Sub Category</option>
 
 {subCategories.map(cat=>(
 <option key={cat._id} value={cat._id}>
@@ -291,6 +308,7 @@ setChildSlug("");
 </select>
 
 )}
+
 
 {childCategories.length>0 && (
 
@@ -307,7 +325,7 @@ setChildSlug(selected.slug);
 }}
 >
 
-<option value="">Select Child</option>
+<option value="">Select Child Category</option>
 
 {childCategories.map(cat=>(
 <option key={cat._id} value={cat._id}>
@@ -321,34 +339,73 @@ setChildSlug(selected.slug);
 
 </div>
 
+</div>
+
+
+{/* DESCRIPTION */}
+
+<div className="space-y-1">
+
+<label className="text-sm font-medium text-gray-700">
+Product Description
+</label>
+
 <textarea
 className="border p-2 w-full rounded"
-placeholder="Description"
+rows="4"
 value={description}
 onChange={e=>setDescription(e.target.value)}
 />
 
-<div className="flex gap-4">
+</div>
+
+
+{/* PRICE */}
+
+<div className="grid grid-cols-2 gap-4">
+
+<div className="space-y-1">
+
+<label className="text-sm font-medium text-gray-700">
+Price
+</label>
 
 <input
 className="border p-2 rounded w-full"
-placeholder="Price"
 value={price}
 onChange={e=>setPrice(e.target.value)}
 />
 
+</div>
+
+<div className="space-y-1">
+
+<label className="text-sm font-medium text-gray-700">
+Offer Price
+</label>
+
 <input
 className="border p-2 rounded w-full"
-placeholder="Offer Price"
 value={offerPrice}
 onChange={e=>setOfferPrice(e.target.value)}
 />
 
 </div>
 
+</div>
+
+
+{/* PRODUCT TYPE */}
+
+<div className="space-y-1">
+
+<label className="text-sm font-medium text-gray-700">
+Product Type
+</label>
+
 <div className="flex gap-6">
 
-<label>
+<label className="flex items-center gap-2">
 <input
 type="radio"
 checked={!hasVariants}
@@ -357,7 +414,7 @@ onChange={()=>setHasVariants(false)}
 Simple Product
 </label>
 
-<label>
+<label className="flex items-center gap-2">
 <input
 type="radio"
 checked={hasVariants}
@@ -368,7 +425,16 @@ Variant Product
 
 </div>
 
+</div>
+
+
 {/* IMAGE UPLOAD */}
+
+<div className="space-y-2">
+
+<label className="text-sm font-medium text-gray-700">
+Product Images
+</label>
 
 <div className="grid grid-cols-4 gap-4">
 
@@ -395,7 +461,9 @@ className="h-full w-full object-cover rounded"
 
 :
 
-<span className="text-gray-400 text-sm">+ Add</span>
+<span className="text-gray-400 text-sm">
++ Upload
+</span>
 
 }
 
@@ -405,18 +473,29 @@ className="h-full w-full object-cover rounded"
 
 </div>
 
+</div>
+
+
 {/* SIMPLE STOCK */}
 
 {!hasVariants && (
 
+<div className="space-y-1">
+
+<label className="text-sm font-medium text-gray-700">
+Stock Quantity
+</label>
+
 <input
 className="border p-2 rounded w-full"
-placeholder="Stock Quantity"
 value={stock}
 onChange={e=>setStock(e.target.value)}
 />
 
+</div>
+
 )}
+
 
 {/* VARIANTS */}
 
@@ -430,8 +509,13 @@ onChange={e=>setStock(e.target.value)}
 
 <div key={index} className="border p-4 rounded space-y-3">
 
+<div className="space-y-1">
+
+<label className="text-sm font-medium">
+Color Name
+</label>
+
 <input
-placeholder="Color Name"
 className="border p-2 w-full"
 value={v.colorName}
 onChange={(e)=>{
@@ -442,6 +526,15 @@ setVariants(copy);
 
 }}
 />
+
+</div>
+
+
+<div className="space-y-1">
+
+<label className="text-sm font-medium">
+Color Picker
+</label>
 
 <input
 type="color"
@@ -455,8 +548,16 @@ setVariants(copy);
 }}
 />
 
+</div>
+
+
+<div className="space-y-1">
+
+<label className="text-sm font-medium">
+Pattern
+</label>
+
 <input
-placeholder="Pattern"
 className="border p-2 w-full"
 value={v.pattern}
 onChange={(e)=>{
@@ -467,6 +568,9 @@ setVariants(copy);
 
 }}
 />
+
+</div>
+
 
 <div className="grid grid-cols-3 gap-3">
 
@@ -510,6 +614,7 @@ Add Variant
 
 )}
 
+
 <button
 onClick={handleSubmit}
 className="bg-green-600 text-white px-6 py-2 rounded"
@@ -522,5 +627,4 @@ Add Product
 </div>
 
 );
-
 }

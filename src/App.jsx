@@ -44,6 +44,7 @@ import TrackOrder from './pages/TrackyourOrder';
 import Invoice from './pages/Invoice';
 import Banners from './pages/admin/Banners';
 import Reviews from './pages/admin/Reviews';
+import StockReport from './pages/admin/StockReport';
 
 const App = () => {
   const location = useLocation();
@@ -100,6 +101,7 @@ const App = () => {
             <Route path='login' element={<AdminLogin />} />
             <Route path='dashboard' element={<AdminDashboard />} />
             <Route path='sales-report' element={<SalesReport />} />
+            <Route path='stock-report' element={<StockReport />} /> 
             <Route path="/admin/banners" element={<Banners />} />
             <Route path="reviews" element={<Reviews />} />
 

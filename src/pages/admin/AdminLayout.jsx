@@ -18,6 +18,7 @@ const AdminLayout = () => {
     { name: "🏷️ Categories", path: "/admin/category-list", icon: assets.product_list_icon },
     { name: "Orders", path: "/admin/orders", icon: assets.order_icon },
     { name: "Sales Report", path: "/admin/sales-report", icon: assets.order_icon },
+    { name: "Stock Report", path: "/admin/stock-report", icon: assets.product_list_icon }, 
     { name: "Homepage Banners", path: "/admin/banners", icon: assets.dashboard_icon },
     { name: "Customer Reviews", path: "/admin/reviews", icon: assets.dashboard_icon },
     { name: "Create Coupon", path: "/admin/create-coupon", icon: assets.create_coupon },

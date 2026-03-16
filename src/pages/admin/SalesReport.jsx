@@ -67,42 +67,67 @@ const SalesReport = () => {
 
       {/* FILTERS */}
 
-      <div className="bg-white p-5 rounded-lg shadow mb-8 flex flex-wrap gap-3">
+      <div className="bg-white p-5 rounded-lg shadow mb-8 flex flex-wrap gap-6 items-end">
 
-        <input
-          type="date"
-          className="border px-3 py-2 rounded"
-          onChange={e => setFilters({ ...filters, from: e.target.value })}
-        />
+        {/* From Date */}
+        <div className="flex flex-col">
+          <label className="text-sm text-gray-600 mb-1">
+            From Date
+          </label>
+          <input
+            type="date"
+            className="border px-3 py-2 rounded"
+            onChange={e => setFilters({ ...filters, from: e.target.value })}
+          />
+        </div>
 
-        <input
-          type="date"
-          className="border px-3 py-2 rounded"
-          onChange={e => setFilters({ ...filters, to: e.target.value })}
-        />
+        {/* To Date */}
+        <div className="flex flex-col">
+          <label className="text-sm text-gray-600 mb-1">
+            To Date
+          </label>
+          <input
+            type="date"
+            className="border px-3 py-2 rounded"
+            onChange={e => setFilters({ ...filters, to: e.target.value })}
+          />
+        </div>
 
-        <select
-          className="border px-3 py-2 rounded"
-          onChange={e => setFilters({ ...filters, paymentType: e.target.value })}
-        >
-          <option value="">All Payments</option>
-          <option value="COD">COD</option>
-          <option value="ONLINE">Online</option>
-        </select>
+        {/* Payment Type */}
+        <div className="flex flex-col">
+          <label className="text-sm text-gray-600 mb-1">
+            Payment Type
+          </label>
+          <select
+            className="border px-3 py-2 rounded"
+            onChange={e => setFilters({ ...filters, paymentType: e.target.value })}
+          >
+            <option value="">All Payments</option>
+            <option value="COD">COD</option>
+            <option value="ONLINE">Online</option>
+          </select>
+        </div>
 
-        <select
-          className="border px-3 py-2 rounded"
-          onChange={e => setFilters({ ...filters, status: e.target.value })}
-        >
-          <option value="">All Status</option>
-          <option value="Delivered">Delivered</option>
-          <option value="Processing">Processing</option>
-          <option value="Pending">Pending</option>
-        </select>
+        {/* Order Status */}
+        <div className="flex flex-col">
+          <label className="text-sm text-gray-600 mb-1">
+            Order Status
+          </label>
+          <select
+            className="border px-3 py-2 rounded"
+            onChange={e => setFilters({ ...filters, status: e.target.value })}
+          >
+            <option value="">All Status</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Processing">Processing</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
 
+        {/* Apply Button */}
         <button
           onClick={loadReport}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded h-[40px]"
         >
           Apply
         </button>
@@ -127,23 +152,25 @@ const SalesReport = () => {
 
       {/* ORDERS TABLE */}
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white rounded-lg shadow overflow-hidden">
 
         <div className="p-5 border-b font-semibold text-gray-700">
           Orders
         </div>
 
-        <table className="w-full text-sm">
+        <table className="w-full text-sm table-auto">
 
           <thead className="bg-gray-100 text-gray-600">
 
-            <tr>
-              <th className="p-3 text-left">Order ID</th>
-              <th>Date</th>
-              <th>Amount</th>
-              <th>Payment</th>
-              <th>Payment Status</th>
-              <th>Status</th>
+            <tr className="text-left">
+
+              <th className="px-4 py-3">Order ID</th>
+              <th className="px-4 py-3">Date</th>
+              <th className="px-4 py-3 text-right">Amount</th>
+              <th className="px-4 py-3 text-center">Payment</th>
+              <th className="px-4 py-3 text-center">Payment Status</th>
+              <th className="px-4 py-3 text-center">Status</th>
+
             </tr>
 
           </thead>
@@ -152,13 +179,13 @@ const SalesReport = () => {
 
             {loading ? (
               <tr>
-                <td colSpan="6" className="text-center p-6">
+                <td colSpan="6" className="text-center py-6">
                   Loading...
                 </td>
               </tr>
             ) : orders.length === 0 ? (
               <tr>
-                <td colSpan="6" className="text-center p-6">
+                <td colSpan="6" className="text-center py-6">
                   No sales found
                 </td>
               </tr>
@@ -167,35 +194,31 @@ const SalesReport = () => {
 
                 <tr
                   key={order._id}
-                  className="border-t hover:bg-gray-50"
+                  className="border-t hover:bg-gray-50 transition"
                 >
 
-                  <td className="p-3 text-blue-600">
+                  <td className="px-4 py-3 text-blue-600 font-medium">
                     {order._id.slice(-8)}
                   </td>
 
-                  <td>
+                  <td className="px-4 py-3">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </td>
 
-                  <td className="font-semibold">
+                  <td className="px-4 py-3 text-right font-semibold">
                     ₹{order.totalAmount}
                   </td>
 
-                  <td>
+                  <td className="px-4 py-3 text-center">
                     {order.paymentType}
                   </td>
 
-                  <td>
-
+                  <td className="px-4 py-3 text-center">
                     <StatusBadge status={order.paymentStatus} />
-
                   </td>
 
-                  <td>
-
+                  <td className="px-4 py-3 text-center">
                     <OrderBadge status={order.status} />
-
                   </td>
 
                 </tr>
