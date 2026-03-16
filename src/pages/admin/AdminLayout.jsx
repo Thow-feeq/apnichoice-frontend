@@ -18,7 +18,32 @@ const AdminLayout = () => {
     { name: "🏷️ Categories", path: "/admin/category-list", icon: assets.product_list_icon },
     { name: "Orders", path: "/admin/orders", icon: assets.order_icon },
     { name: "Sales Report", path: "/admin/sales-report", icon: assets.order_icon },
-    { name: "Stock Report", path: "/admin/stock-report", icon: assets.product_list_icon }, 
+    { name: "Stock Report", path: "/admin/stock-report", icon: assets.product_list_icon },
+    /* SUPPLIER MODULE */
+
+    {
+      name: "Add Supplier",
+      path: "/admin/add-supplier",
+      icon: assets.add_icon
+    },
+    {
+      name: "Supplier List",
+      path: "/admin/suppliers",
+      icon: assets.product_list_icon
+    },
+
+    /* PURCHASE MODULE */
+
+    {
+      name: "Add Purchase",
+      path: "/admin/add-purchase",
+      icon: assets.add_icon
+    },
+    {
+      name: "Purchase List",
+      path: "/admin/purchases",
+      icon: assets.product_list_icon
+    },
     { name: "Homepage Banners", path: "/admin/banners", icon: assets.dashboard_icon },
     { name: "Customer Reviews", path: "/admin/reviews", icon: assets.dashboard_icon },
     { name: "Create Coupon", path: "/admin/create-coupon", icon: assets.create_coupon },

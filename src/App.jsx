@@ -45,7 +45,10 @@ import Invoice from './pages/Invoice';
 import Banners from './pages/admin/Banners';
 import Reviews from './pages/admin/Reviews';
 import StockReport from './pages/admin/StockReport';
-
+import AddSupplier from "./pages/admin/AddSupplier";
+import SupplierList from "./pages/admin/SupplierList";
+import AddPurchase from "./pages/admin/AddPurchase";
+import PurchaseList from "./pages/admin/PurchaseList";
 const App = () => {
   const location = useLocation();
   const isSellerPath = location.pathname.includes("admin");
@@ -91,7 +94,11 @@ const App = () => {
 
             {/* ✅ THIS IS THE MISSING ROUTE */}
             <Route path='edit-category/:id' element={<EditCategory />} />
+            <Route path="/admin/add-supplier" element={<AddSupplier />} />
+            <Route path="/admin/suppliers" element={<SupplierList />} />
 
+            <Route path="/admin/add-purchase" element={<AddPurchase />} />
+            <Route path="/admin/purchases" element={<PurchaseList />} />
             <Route path='orders' element={<Orders />} />
             <Route path='create-coupon' element={<SellerCreateCoupon />} />
             <Route path='edit-product/:id' element={<EditProduct />} />
@@ -101,7 +108,7 @@ const App = () => {
             <Route path='login' element={<AdminLogin />} />
             <Route path='dashboard' element={<AdminDashboard />} />
             <Route path='sales-report' element={<SalesReport />} />
-            <Route path='stock-report' element={<StockReport />} /> 
+            <Route path='stock-report' element={<StockReport />} />
             <Route path="/admin/banners" element={<Banners />} />
             <Route path="reviews" element={<Reviews />} />
 

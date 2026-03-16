@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAppContext } from "../../context/AppContext";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const SalesReport = () => {
 
@@ -53,6 +55,43 @@ const SalesReport = () => {
       ? Math.round(summary.totalSales / summary.totalOrders)
       : 0;
 
+  /* EXPORT EXCEL */
+
+  const exportExcel = () => {
+
+    if (!orders.length) {
+      alert("No data to export");
+      return;
+    }
+
+    const data = orders.map(order => ({
+      "Order ID": order._id,
+      "Date": new Date(order.createdAt).toLocaleDateString(),
+      "Amount": order.totalAmount,
+      "Payment Type": order.paymentType,
+      "Payment Status": order.paymentStatus,
+      "Order Status": order.status
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array"
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8"
+    });
+
+    saveAs(blob, "sales_report.xlsx");
+
+  };
+
   return (
 
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -60,16 +99,24 @@ const SalesReport = () => {
       {/* HEADER */}
 
       <div className="flex justify-between items-center mb-8">
+
         <h1 className="text-2xl font-bold text-gray-800">
           Sales Dashboard
         </h1>
+
+        <button
+          onClick={exportExcel}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+        >
+          Export Excel
+        </button>
+
       </div>
 
       {/* FILTERS */}
 
       <div className="bg-white p-5 rounded-lg shadow mb-8 flex flex-wrap gap-6 items-end">
 
-        {/* From Date */}
         <div className="flex flex-col">
           <label className="text-sm text-gray-600 mb-1">
             From Date
@@ -81,7 +128,6 @@ const SalesReport = () => {
           />
         </div>
 
-        {/* To Date */}
         <div className="flex flex-col">
           <label className="text-sm text-gray-600 mb-1">
             To Date
@@ -93,7 +139,6 @@ const SalesReport = () => {
           />
         </div>
 
-        {/* Payment Type */}
         <div className="flex flex-col">
           <label className="text-sm text-gray-600 mb-1">
             Payment Type
@@ -108,7 +153,6 @@ const SalesReport = () => {
           </select>
         </div>
 
-        {/* Order Status */}
         <div className="flex flex-col">
           <label className="text-sm text-gray-600 mb-1">
             Order Status
@@ -124,7 +168,6 @@ const SalesReport = () => {
           </select>
         </div>
 
-        {/* Apply Button */}
         <button
           onClick={loadReport}
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded h-[40px]"
@@ -139,13 +182,9 @@ const SalesReport = () => {
       <div className="grid md:grid-cols-5 gap-6 mb-10">
 
         <Card title="Total Orders" value={summary.totalOrders} />
-
         <Card title="Total Revenue" value={`₹${summary.totalSales}`} />
-
         <Card title="COD Revenue" value={`₹${summary.codSales}`} />
-
         <Card title="Online Revenue" value={`₹${summary.onlineSales}`} />
-
         <Card title="Avg Order Value" value={`₹${avgOrderValue}`} />
 
       </div>
@@ -241,13 +280,8 @@ const SalesReport = () => {
 const Card = ({ title, value }) => (
 
   <div className="bg-white p-6 rounded-lg shadow">
-
     <p className="text-gray-500 text-sm">{title}</p>
-
-    <h2 className="text-2xl font-bold mt-1">
-      {value}
-    </h2>
-
+    <h2 className="text-2xl font-bold mt-1">{value}</h2>
   </div>
 
 );
