@@ -14,11 +14,9 @@ const About = () => {
           </h1>
 
           <p className="text-lg text-gray-600 leading-relaxed">
-            Vasthraa Dhee Fashions is a modern textile destination created for
-            fashion lovers who appreciate quality fabrics, elegant designs, and
-            timeless craftsmanship. We bring together traditional textile
-            heritage and contemporary fashion to deliver clothing that
-            celebrates style, comfort, and individuality.
+            At Vastraa Dhee Fashions, we believe every fabric tells a story – of elegance, comfort, and timeless style. Founded with a passion for textiles, our startup showroom brings together tradition and modern fashion under one roof. From daily essentials to festive collections, we handpick fabrics that blend quality, style, and affordability.
+
+            Our vision is simple: to make premium textiles accessible to everyone while celebrating the rich heritage of Indian craftsmanship. Whether it’s a classic saree, a contemporary dress material, or trendy wear, every piece in our showroom is chosen with care to ensure you look and feel your best.
           </p>
 
           <p className="text-gray-600">
@@ -56,17 +54,14 @@ const About = () => {
           </h2>
 
           <p className="text-lg leading-relaxed text-gray-600">
-            At Vasthraa Dhee Fashions, we believe clothing is more than fabric —
-            it is an expression of personality and culture. Our collections
-            combine premium materials, detailed craftsmanship, and fashionable
-            designs that cater to men, women, and kids.
+            What sets us apart is not just our wide range of collections, but also our commitment to customer satisfaction. We see every visitor not just as a buyer, but as part of our extended family. With personalized service, honest pricing, and attention to detail, we strive to make every shopping experience memorable.
+
+
+
           </p>
 
           <p className="text-gray-600">
-            Whether you are looking for elegant ethnic wear, modern casual
-            outfits, or comfortable everyday clothing, our goal is to bring
-            quality fashion directly to your doorstep through a seamless online
-            shopping experience.
+            At Vastraa Dhee fashions], we don’t just sell textiles – we create fashion experiences that last. Step into our showroom and discover fabrics that fit every mood, every moment, and every occasion.
           </p>
         </div>
 
@@ -76,38 +71,38 @@ const About = () => {
       {/* WHY CHOOSE US */}
       <div className="bg-[#fff5f5] rounded-2xl p-10 shadow-md">
 
-        <h2 className="text-3xl font-bold text-center text-[#7b0f0f] mb-10">
+        {/* <h2 className="text-3xl font-bold text-center text-[#7b0f0f] mb-10">
           Why Choose Vasthraa Dhee?
-        </h2>
+        </h2> */}
 
         <div className="grid md:grid-cols-3 gap-8">
 
           <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
             <h4 className="font-semibold text-lg text-[#7b0f0f] mb-2">
-              Premium Fabrics
+              Our Mission
             </h4>
             <p className="text-gray-600">
-              Carefully sourced materials ensuring comfort, durability, and
-              luxurious feel.
+              “To deliver premium-quality textiles that blend tradition and modern fashion, while ensuring affordability, variety, and customer satisfaction.”
             </p>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
             <h4 className="font-semibold text-lg text-[#7b0f0f] mb-2">
-              Trendy Designs
+              Our Vision
             </h4>
             <p className="text-gray-600">
-              Stylish collections inspired by modern fashion and traditional
-              textile heritage.
+              “To become a trusted name in the textile industry by offering fabrics that inspire confidence, celebrate culture, and redefine everyday style.”
             </p>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
             <h4 className="font-semibold text-lg text-[#7b0f0f] mb-2">
-              Affordable Pricing
+              Our Values
             </h4>
             <p className="text-gray-600">
-              High-quality fashion at prices designed to suit every wardrobe.
+              Quality First – Every fabric is handpicked for durability and comfort.
+
+              Customer-Centric – Your satisfaction is the fabric of our success.
             </p>
           </div>
 
